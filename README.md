@@ -9,8 +9,8 @@ A REST API boilerplate project using `fastapi` and `dataset`, setup for easy dep
 Clone the repo
 
 ```sh
-$ git clone https://github.com/Ju99ernaut/super-fastapi.git
-$ cd superfast-api
+$ git clone https://github.com/Ju99ernaut/app-listing-server.git
+$ cd app-listing-server
 ```
 
 Create virtual enviroment
