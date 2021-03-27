@@ -2,7 +2,7 @@ import uvicorn
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import items
+from routes import users
 
 import config
 
@@ -10,8 +10,8 @@ from constants import *
 
 config.parse_args()
 app = FastAPI(
-    title="API",
-    description="API boilerplate",
+    title="App Listing",
+    description="Public API Rally community applications listing",
     version="1.0.0",
     openapi_tags=API_TAGS_METADATA,
 )
@@ -24,7 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(items.router)
+app.include_router(users.router)
 
 
 @app.get("/")
