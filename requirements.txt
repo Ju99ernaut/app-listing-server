@@ -2,4 +2,8 @@ ConfigArgParse
 requests
 dataset
 fastapi
+python-multipart
+psycopg2
 uvicorn[standard]
+python-jose[cryptography]
+passlib[bcrypt]
