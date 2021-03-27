@@ -28,4 +28,4 @@ Table ratings {
 
 // Creating references
 // You can also define relaionship separately
-// > many-to-one; < one-to-many; - one-to-oe) > merchants.(id, country_code)
+// > many-to-one; < one-to-many; - one-to-one
