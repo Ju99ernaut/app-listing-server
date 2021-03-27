@@ -3,7 +3,6 @@
 """
 APPS_TABLE = "applications"
 RATINGS_TABLE = "ratings"
-RATING_TABLE = "rating"
 USERS_TABLE = "users"
 
 IMAGE_KEY = "image"

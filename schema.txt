@@ -15,22 +15,13 @@ Table applications {
   image varchar
   title varchar [not null, unique]
   by varchar
-  rating float [ref: - rating.rating]
   groups [varchar]
   owner varchar [ref: - U.username]
 }
 
-// Single rating per application per user
 Table ratings {
   id int [pk, increment] // auto-increment
   user varchar [ref: - U.username]
-  application varchar [ref: - applications.title]
-  rating float
-}
-
-// Overall rating per application
-Table rating {
-  id int [pk, increment] // auto-increment
   application varchar [ref: - applications.title]
   rating float
 }
