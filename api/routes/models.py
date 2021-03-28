@@ -1,18 +1,26 @@
 from typing import Optional, List
 from pydantic import BaseModel
+from datetime import datetime
 
 
 class Application(BaseModel):
+    id: Optional[int] = None
     image: str
     title: str
     by: str
-    groups: List(str)
+    groups: List[str]
+    description: str
+    updated: Optional[datetime] = None
+    owner: Optional[str] = None
 
 
 class Rating(BaseModel):
+    id: Optional[int] = None
     user: str
     application: str
     rating: float
+    comment: Optional[str] = None
+    updated: Optional[datetime] = None
 
 
 class RatingAverage(BaseModel):
@@ -30,9 +38,10 @@ class TokenData(BaseModel):
 
 
 class User(BaseModel):
+    id: Optional[int] = None
     username: str
     email: Optional[str] = None
-    disabled: Optional[bool] = None
+    joined: Optional[datetime] = None
 
 
 class UserInDB(User):
