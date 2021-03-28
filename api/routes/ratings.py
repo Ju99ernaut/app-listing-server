@@ -33,5 +33,5 @@ async def read_app_average(application: str):
 
 
 @router.get("/average", response_model=List[RatingAverage])
-async def read_all_averages():
+async def read_all_app_averages():
     return data.get_all_average_ratings()

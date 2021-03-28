@@ -50,27 +50,12 @@ async def unregister_users_me(current_user: User = Depends(get_current_user)):
 
 
 @router.get("/users/me/apps", response_model=List[Application])
-async def read_own_items(current_user: User = Depends(get_current_user)):
+async def read_own_apps(current_user: User = Depends(get_current_user)):
     return [apps for apps in data.get_user_applications(current_user.username)]
 
 
-@router.get("/users/me/ratings", response_model=List[Rating])
-async def read_own_items(current_user: User = Depends(get_current_user)):
-    return [ratings for ratings in data.get_user_ratings(current_user.username)]
-
-
-@router.get("/users/me/ratings/{application}", response_model=Rating)
-async def read_own_items(
-    application: str, current_user: User = Depends(get_current_user)
-):
-    rating = data.get_user_application_ratings(current_user.username, application)
-    if not rating:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return rating
-
-
 @router.post("/users/me/apps", response_model=Application)
-async def add_item(app: Application, current_user: User = Depends(get_current_user)):
+async def add_app(app: Application, current_user: User = Depends(get_current_user)):
     data.add_application(
         app.image,
         app.title,
@@ -86,12 +71,27 @@ async def add_item(app: Application, current_user: User = Depends(get_current_us
 
 
 @router.delete("/users/me/apps/{title}")
-async def delete_item(title: str, current_user: User = Depends(get_current_user)):
+async def delete_app(title: str, current_user: User = Depends(get_current_user)):
     data.remove_application(title, current_user.username)
 
 
+@router.get("/users/me/ratings", response_model=List[Rating])
+async def read_own_ratings(current_user: User = Depends(get_current_user)):
+    return [ratings for ratings in data.get_user_ratings(current_user.username)]
+
+
+@router.get("/users/me/ratings/{application}", response_model=Rating)
+async def read_own_application_rating(
+    application: str, current_user: User = Depends(get_current_user)
+):
+    rating = data.get_user_application_ratings(current_user.username, application)
+    if not rating:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return rating
+
+
 @router.post("/users/me/ratings/{application}", response_model=Rating)
-async def add_item(
+async def add_app(
     application: str, rating: Rating, current_user: User = Depends(get_current_user)
 ):
     data.add_rating(
