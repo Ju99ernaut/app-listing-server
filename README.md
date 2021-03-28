@@ -1,4 +1,4 @@
-# RallyRoleBot 
+# App Listing API
 
 A REST API boilerplate project using `fastapi` and `dataset`, setup for easy deployment on `heroku`.
 
