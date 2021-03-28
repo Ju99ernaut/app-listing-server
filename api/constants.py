@@ -10,18 +10,23 @@ TITLE_KEY = "title"
 BY_KEY = "by"
 RATING_KEY = "rating"
 GROUPS_KEY = "groups"
+DESCRIPTION_KEY = "description"
+UPDATED_KEY = "updated"
 OWNER_KEY = "owner"
 
 USER_KEY = "user"
 APPLICATION_KEY = "application"
+COMMENT_KEY = "comment"
 
 USERNAME_KEY = "username"
 EMAIL_KEY = "email"
 PASSWORD_KEY = "password"
 DISABLED_KEY = "disabled"
+JOINED_KEY = "joined"
 
 API_TAGS_METADATA = [
-    {"name": "items", "description": "Some random items"},
+    {"name": "applications", "description": "Application listing"},
+    {"name": "ratings", "description": "Ratings and user feedback"},
     {"name": "users", "description": "User data"},
 ]
 

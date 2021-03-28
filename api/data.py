@@ -1,4 +1,5 @@
 import dataset
+from datetime import datetime
 
 import config
 from constants import *
@@ -13,24 +14,38 @@ from utils.db import connect_db
     title: str
     by: str
     groups: [str]
+    description: str
+    updated: datetime
     owner: user
     
     #################### ratings ##########################
     user: user
     application: application
     rating: float
+    comment: str
+    updated: datetime
 
     #################### users ############################
     username: str
     email: str
     password: str
-    disablled: bool
+    joined: datetime
 
 """
 
 
 @connect_db
-def add_application(db, image, title, by, groups, owner):
+def setup(db):
+    users = db[USERS_TABLE]
+    users.create_column(USERNAME_KEY, unique=True, nullable=False)
+    users.create_column(EMAIL_KEY, unique=True, nullable=False)
+
+    apps = db[APPS_TABLE]
+    apps.create_column(TITLE_KEY, unique=True, nullable=False)
+
+
+@connect_db
+def add_application(db, image, title, by, groups, description, owner):
     table = db[APPS_TABLE]
     table.upsert(
         {
@@ -38,6 +53,8 @@ def add_application(db, image, title, by, groups, owner):
             TITLE_KEY: title,
             BY_KEY: by,
             GROUPS_KEY: groups,
+            DESCRIPTION_KEY: description,
+            UPDATED_KEY: datetime.uctnow(),
             OWNER_KEY: owner,
         },
         [TITLE_KEY, OWNER_KEY],
@@ -45,9 +62,9 @@ def add_application(db, image, title, by, groups, owner):
 
 
 @connect_db
-def remove_application(db, title):
+def remove_application(db, title, owner):
     table = db[APPS_TABLE]
-    table.delete(title=title)
+    table.delete(title=title, owner=owner)
 
 
 @connect_db
@@ -60,6 +77,15 @@ def get_application(db, title):
 
 
 @connect_db
+def get_user_applications(db, owner):
+    table = db[APPS_TABLE]
+    rows = table.find(owner=owner)
+    if rows is not None:
+        return rows
+    return None
+
+
+@connect_db
 def get_all_applications(db):
     table = db[APPS_TABLE]
     all_items = table.all()
@@ -67,39 +93,66 @@ def get_all_applications(db):
 
 
 @connect_db
-def add_rating(db, user, application, rating):
+def add_rating(db, user, application, rating, comment=None):
     table = db[RATINGS_TABLE]
     table.upsert(
         {
             USER_KEY: user,
             APPLICATION_KEY: application,
             RATING_KEY: rating,
+            COMMENT_KEY: comment,
+            UPDATED_KEY: datetime.uctnow(),
         },
         [USER_KEY, APPLICATION_KEY, RATING_KEY],
     )
 
 
 @connect_db
-def get_user_rating(db, user):
+def get_user_application_ratings(db, user, application):
     table = db[RATINGS_TABLE]
-    row = table.find_one(user=user)
+    row = table.find_one(user=user, application=application)
     if row is not None:
         return row
     return None
 
 
 @connect_db
-def get_application_rating(db, application):
+def get_user_ratings(db, user):
     table = db[RATINGS_TABLE]
-    row = table.find(application=application)
-    avg_rating = sum([rating[RATING_KEY] for rating in row]) / row.count()
-    if row is not None:
-        return avg_rating
+    rows = table.find(user=user)
+    if rows is not None:
+        return rows
+    return None
+
+
+@connect_db
+def get_application_ratings(db, application):
+    table = db[RATINGS_TABLE]
+    rows = table.find(application=application)
+    if rows is not None:
+        return rows
     return None
 
 
 @connect_db
 def get_all_ratings(db):
+    table = db[RATINGS_TABLE]
+    all_items = table.all()
+    return all_items
+
+
+@connect_db
+def get_average_rating(db, application):
+    table = db[RATINGS_TABLE]
+    rows = table.find(application=application)
+    avg_rating = sum([rating[RATING_KEY] for rating in rows]) / rows.count()
+    if rows is not None:
+        return avg_rating
+    return None
+
+
+@connect_db
+def get_all_average_ratings(db):
     table = db[RATINGS_TABLE]
     apps = [app[APPLICATION_KEY] for app in table.distinct(APPLICATION_KEY)]
     all_items = []
@@ -107,21 +160,21 @@ def get_all_ratings(db):
         all_items.append(
             {
                 APPLICATION_KEY: app,
-                RATING_KEY: get_application_rating(app),
+                RATING_KEY: get_average_rating(app),
             }
         )
     return all_items
 
 
 @connect_db
-def add_user(db, username, email, password, disabled):
+def add_user(db, username, email, password):
     table = db[USERS_TABLE]
     table.upsert(
         {
             USERNAME_KEY: username,
             EMAIL_KEY: email,
             PASSWORD_KEY: password,
-            DISABLED_KEY: disabled,
+            JOINED_KEY: datetime.uctnow(),
         },
         [USERNAME_KEY, EMAIL_KEY],
     )

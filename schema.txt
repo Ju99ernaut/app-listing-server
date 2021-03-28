@@ -7,7 +7,7 @@ Table users as U {
   username varchar [not null, unique]
   email varchar [not null, unique]
   password varchar
-  disabled bool
+  joined datetime
 }
 
 Table applications {
@@ -16,6 +16,8 @@ Table applications {
   title varchar [not null, unique]
   by varchar
   groups [varchar]
+  description varchar
+  updated datetime
   owner varchar [ref: - U.username]
 }
 
@@ -24,6 +26,8 @@ Table ratings {
   user varchar [ref: - U.username]
   application varchar [ref: - applications.title]
   rating float
+  comment varchar
+  updated datetime
 }
 
 // Creating references
