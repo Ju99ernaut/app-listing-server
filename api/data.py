@@ -1,3 +1,4 @@
+import os
 import dataset
 from datetime import datetime
 
@@ -5,6 +6,7 @@ import config
 from constants import *
 
 from utils.db import connect_db
+from utils.password import get_hash
 
 """Functions for managing a dataset SQL database
     # Schemas
@@ -30,6 +32,7 @@ from utils.db import connect_db
     email: str
     password: str
     joined: datetime
+    admin: bool
 
 """
 
@@ -42,6 +45,23 @@ def setup(db):
 
     apps = db[APPS_TABLE]
     apps.create_column(TITLE_KEY, unique=True, nullable=False)
+
+    username = os.getenv("ADMIN_USERNAME")
+    password = os.getenv("ADMIN_PASSWORD")
+    email = os.getenv("ADMIN_EMAIL")
+
+    if username and password and email:
+        table = db[USERS_TABLE]
+        table.upsert(
+            {
+                USERNAME_KEY: username,
+                EMAIL_KEY: email,
+                PASSWORD_KEY: get_hash(password),
+                JOINED_KEY: datetime.uctnow(),
+                ADMIN_KEY: True,
+            },
+            [USERNAME_KEY, EMAIL_KEY],
+        )
 
 
 @connect_db
@@ -175,6 +195,7 @@ def add_user(db, username, email, password):
             EMAIL_KEY: email,
             PASSWORD_KEY: password,
             JOINED_KEY: datetime.uctnow(),
+            ADMIN_KEY: False,
         },
         [USERNAME_KEY, EMAIL_KEY],
     )

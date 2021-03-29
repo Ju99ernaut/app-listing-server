@@ -8,6 +8,7 @@ Table users as U {
   email varchar [not null, unique]
   password varchar
   joined datetime
+  admin bool
 }
 
 Table applications {

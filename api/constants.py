@@ -23,6 +23,7 @@ EMAIL_KEY = "email"
 PASSWORD_KEY = "password"
 DISABLED_KEY = "disabled"
 JOINED_KEY = "joined"
+ADMIN_KEY = "admin"
 
 API_TAGS_METADATA = [
     {"name": "applications", "description": "Application listing"},
