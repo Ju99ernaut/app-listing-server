@@ -32,9 +32,7 @@ app.include_router(ratings.router)
 
 @app.get("/")
 async def root():
-    return {
-        "docs": "api documentation at /docs or /redoc",
-    }
+    return {"docs": "api documentation at /docs or /redoc"}
 
 
 if __name__ == "__main__":
