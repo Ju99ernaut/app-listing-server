@@ -1,0 +1,11 @@
+ConfigArgParse
+black
+requests
+dataset
+fastapi
+python-multipart
+psycopg2
+pytest
+uvicorn[standard]
+python-jose[cryptography]
+passlib[bcrypt]
