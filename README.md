@@ -26,8 +26,16 @@ Windows: `.\venv\Scripts\Activate.ps1` or `.\venv\Scripts\activate`
 
 Install dependencies
 
+> Use `requirements.txt` in production
+
 ```sh
-$ pip install -r requirements.txt`
+$ pip install -r requirements.dev.txt`
+```
+
+Run tests
+
+```sh
+$ pytest
 ```
 
 Run
