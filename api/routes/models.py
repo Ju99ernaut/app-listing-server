@@ -42,6 +42,7 @@ class User(BaseModel):
     username: str
     email: Optional[str] = None
     joined: Optional[datetime] = None
+    admin: bool
 
 
 class UserInDB(User):
