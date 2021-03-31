@@ -1,4 +1,5 @@
 import data
+from datetime import timedelta
 
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -20,7 +21,7 @@ async def register_user(user: UserInDB):
         raise HTTPException(
             status_code=404, detail="Item not found, failed to register"
         )
-    return User(return_user)
+    return return_user
 
 
 @router.post("/auth", response_model=Token)
@@ -34,7 +35,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user[USERNAME_KEY]}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -46,12 +47,14 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
 
 @router.delete("/users/me/")
 async def unregister_users_me(current_user: User = Depends(get_current_user)):
-    data.remove_user(current_user.username, current_user.email, current_user.password)
+    data.remove_user(
+        current_user[USERNAME_KEY], current_user[EMAIL_KEY], current_user[PASSWORD_KEY]
+    )
 
 
 @router.get("/users/me/apps", response_model=List[Application])
 async def read_own_apps(current_user: User = Depends(get_current_user)):
-    return [apps for apps in data.get_user_applications(current_user.username)]
+    return [apps for apps in data.get_user_applications(current_user[USERNAME_KEY])]
 
 
 @router.post("/users/me/apps", response_model=Application)
@@ -62,7 +65,7 @@ async def add_app(app: Application, current_user: User = Depends(get_current_use
         app.by,
         app.groups,
         app.description,
-        current_user.username,
+        current_user[USERNAME_KEY],
     )
     return_app = data.get_application(app.title)
     if not return_app:
@@ -72,19 +75,19 @@ async def add_app(app: Application, current_user: User = Depends(get_current_use
 
 @router.delete("/users/me/apps/{title}")
 async def delete_app(title: str, current_user: User = Depends(get_current_user)):
-    data.remove_application(title, current_user.username)
+    data.remove_application(title, current_user[USERNAME_KEY])
 
 
 @router.get("/users/me/ratings", response_model=List[Rating])
 async def read_own_ratings(current_user: User = Depends(get_current_user)):
-    return [ratings for ratings in data.get_user_ratings(current_user.username)]
+    return [ratings for ratings in data.get_user_ratings(current_user[USERNAME_KEY])]
 
 
 @router.get("/users/me/ratings/{application}", response_model=Rating)
 async def read_own_application_rating(
     application: str, current_user: User = Depends(get_current_user)
 ):
-    rating = data.get_user_application_ratings(current_user.username, application)
+    rating = data.get_user_application_ratings(current_user[USERNAME_KEY], application)
     if not rating:
         raise HTTPException(status_code=404, detail="Item not found")
     return rating
@@ -95,13 +98,13 @@ async def add_app(
     application: str, rating: Rating, current_user: User = Depends(get_current_user)
 ):
     data.add_rating(
-        current_user.username,
+        current_user[USERNAME_KEY],
         application,
         rating.rating,
         rating.comment,
     )
     return_rating = data.get_user_application_ratings(
-        current_user.username, application
+        current_user[USERNAME_KEY], application
     )
     if not return_rating:
         raise HTTPException(status_code=404, detail="Item not found, failed to add")

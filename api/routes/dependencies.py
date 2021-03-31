@@ -6,6 +6,8 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from .models import TokenData, User
 
+from constants import *
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth")
 
 

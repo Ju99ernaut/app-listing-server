@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -8,7 +8,7 @@ class Application(BaseModel):
     image: str
     title: str
     by: str
-    groups: List[str]
+    groups: str
     description: str
     updated: Optional[datetime] = None
     owner: Optional[str] = None

@@ -39,12 +39,12 @@ from utils.password import get_hash
 
 @connect_db
 def setup(db):
-    users = db[USERS_TABLE]
-    users.create_column(USERNAME_KEY, unique=True, nullable=False)
-    users.create_column(EMAIL_KEY, unique=True, nullable=False)
+    # users = db[USERS_TABLE]
+    # users.create_column(USERNAME_KEY, db.types.text, unique=True, nullable=False)
+    # users.create_column(EMAIL_KEY, db.types.text, unique=True, nullable=False)
 
-    apps = db[APPS_TABLE]
-    apps.create_column(TITLE_KEY, unique=True, nullable=False)
+    # apps = db[APPS_TABLE]
+    # apps.create_column(TITLE_KEY, db.types.text, unique=True, nullable=False)
 
     username = os.getenv("ADMIN_USERNAME")
     password = os.getenv("ADMIN_PASSWORD")
@@ -57,7 +57,7 @@ def setup(db):
                 USERNAME_KEY: username,
                 EMAIL_KEY: email,
                 PASSWORD_KEY: get_hash(password),
-                JOINED_KEY: datetime.uctnow(),
+                JOINED_KEY: datetime.utcnow(),
                 ADMIN_KEY: True,
             },
             [USERNAME_KEY, EMAIL_KEY],
@@ -74,7 +74,7 @@ def add_application(db, image, title, by, groups, description, owner):
             BY_KEY: by,
             GROUPS_KEY: groups,
             DESCRIPTION_KEY: description,
-            UPDATED_KEY: datetime.uctnow(),
+            UPDATED_KEY: datetime.utcnow(),
             OWNER_KEY: owner,
         },
         [TITLE_KEY, OWNER_KEY],
@@ -121,7 +121,7 @@ def add_rating(db, user, application, rating, comment=None):
             APPLICATION_KEY: application,
             RATING_KEY: rating,
             COMMENT_KEY: comment,
-            UPDATED_KEY: datetime.uctnow(),
+            UPDATED_KEY: datetime.utcnow(),
         },
         [USER_KEY, APPLICATION_KEY, RATING_KEY],
     )
@@ -194,10 +194,10 @@ def add_user(db, username, email, password):
             USERNAME_KEY: username,
             EMAIL_KEY: email,
             PASSWORD_KEY: password,
-            JOINED_KEY: datetime.uctnow(),
+            JOINED_KEY: datetime.utcnow(),
             ADMIN_KEY: False,
         },
-        [USERNAME_KEY, EMAIL_KEY],
+        [USERNAME_KEY],
     )
 
 

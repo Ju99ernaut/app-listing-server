@@ -38,7 +38,8 @@ def connect_db(function):
 
         try:
             result = function(db, *args, **kwargs)
-        except:
+        except Exception as e:
+            print(e)
             db.rollback()
 
         return result
