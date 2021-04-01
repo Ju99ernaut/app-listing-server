@@ -14,6 +14,14 @@ class Application(BaseModel):
     owner: Optional[str] = None
 
 
+class UpdateApplication(BaseModel):
+    image: Optional[str] = None
+    title: Optional[str] = None
+    by: Optional[str] = None
+    groups: Optional[str] = None
+    description: Optional[str] = None
+
+
 class Rating(BaseModel):
     id: Optional[int] = None
     user: str
@@ -43,6 +51,11 @@ class User(BaseModel):
     email: Optional[str] = None
     joined: Optional[datetime] = None
     admin: bool
+
+
+class UpdateUser(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
 
 
 class UserInDB(User):

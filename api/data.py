@@ -60,7 +60,7 @@ def setup(db):
 @connect_db
 def add_application(db, image, title, by, groups, description, owner):
     table = db[APPS_TABLE]
-    table.upsert(
+    table.insert(
         {
             IMAGE_KEY: image,
             TITLE_KEY: title,
@@ -69,9 +69,14 @@ def add_application(db, image, title, by, groups, description, owner):
             DESCRIPTION_KEY: description,
             UPDATED_KEY: datetime.utcnow(),
             OWNER_KEY: owner,
-        },
-        [TITLE_KEY, OWNER_KEY],
+        }
     )
+
+
+@connect_db
+def update_application(db, data):
+    table = db[APPS_TABLE]
+    table.update(data, ["ïd"])
 
 
 @connect_db
@@ -208,6 +213,12 @@ def add_user(db, username, email, password):
             ADMIN_KEY: False,
         },
     )
+
+
+@connect_db
+def update_user(db, data):
+    table = db[USERS_TABLE]
+    table.update(data, ["ïd"])
 
 
 @connect_db

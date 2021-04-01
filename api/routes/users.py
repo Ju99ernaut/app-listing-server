@@ -4,7 +4,7 @@ from datetime import timedelta
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from .models import Token, TokenData, User, UserInDB, Application, Rating
+from .models import Token, TokenData, User, UserInDB, Application, Rating, UpdateUser, UpdateApplication
 from .dependencies import get_current_user
 from utils.password import authenticate, create_access_token, get_hash
 
@@ -47,6 +47,14 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         data={"sub": user[USERNAME_KEY]}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.put("/users/me", response_model=User)
+async def update_user_me(user: UpdateUser, current_user: User = Depends(get_current_user)):
+    db_user = data.get_user(current_user.username)
+    user.id = db_user["id"]
+    data.update_user(user)
+    return data.get_user(current_user.username)
 
 
 @router.get("/users/me/", response_model=User)
@@ -92,6 +100,14 @@ async def add_app(app: Application, current_user: User = Depends(get_current_use
     if not return_app:
         raise HTTPException(status_code=404, detail="Item not found, failed to add")
     return return_app
+
+
+@router.put("/users/me/apps/{title}", response_model=Application)
+async def update_application(title: str, app: UpdateApplication, current_user: User = Depends(get_current_user)):
+    db_app = data.get_application(title)
+    app.id = db_app["id"]
+    data.update_application(app)
+    return data.get_application(title)
 
 
 @router.delete("/users/me/apps/{title}")
