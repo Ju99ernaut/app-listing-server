@@ -5,9 +5,9 @@ A REST API for an app store like application project using `fastapi` and `datase
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
 ## To Do
--[ ] External auth
--[ ] Change password
--[ ] Admin dashboard
+- [ ] External auth
+- [ ] Change password
+- [ ] Admin dashboard
 
 ## Usage
 
