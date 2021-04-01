@@ -39,13 +39,6 @@ from utils.password import get_hash
 
 @connect_db
 def setup(db):
-    # users = db[USERS_TABLE]
-    # users.create_column(USERNAME_KEY, db.types.text, unique=True, nullable=False)
-    # users.create_column(EMAIL_KEY, db.types.text, unique=True, nullable=False)
-
-    # apps = db[APPS_TABLE]
-    # apps.create_column(TITLE_KEY, db.types.text, unique=True, nullable=False)
-
     username = os.getenv("ADMIN_USERNAME")
     password = os.getenv("ADMIN_PASSWORD")
     email = os.getenv("ADMIN_EMAIL")
@@ -88,6 +81,12 @@ def remove_application(db, title, owner):
 
 
 @connect_db
+def admin_remove_application(db, id, owner):
+    table = db[APPS_TABLE]
+    table.delete(id=id)
+
+
+@connect_db
 def get_application(db, title):
     table = db[APPS_TABLE]
     row = table.find_one(title=title)
@@ -123,7 +122,7 @@ def add_rating(db, user, application, rating, comment=None):
             COMMENT_KEY: comment,
             UPDATED_KEY: datetime.utcnow(),
         },
-        [USER_KEY, APPLICATION_KEY, RATING_KEY],
+        [USER_KEY, APPLICATION_KEY],
     )
 
 
@@ -162,6 +161,17 @@ def get_all_ratings(db):
 
 
 @connect_db
+def remove_rating(db, id, user):
+    table = db[RATINGS_TABLE]
+    table.delete(id=id, user=user)
+
+
+def admin_remove_rating(db, id):
+    table = db[RATINGS_TABLE]
+    table.delete(id=id)
+
+
+@connect_db
 def get_average_rating(db, application):
     table = db[RATINGS_TABLE]
     rows = table.find(application=application)
@@ -189,7 +199,7 @@ def get_all_average_ratings(db):
 @connect_db
 def add_user(db, username, email, password):
     table = db[USERS_TABLE]
-    table.upsert(
+    table.insert(
         {
             USERNAME_KEY: username,
             EMAIL_KEY: email,
@@ -197,7 +207,6 @@ def add_user(db, username, email, password):
             JOINED_KEY: datetime.utcnow(),
             ADMIN_KEY: False,
         },
-        [USERNAME_KEY],
     )
 
 
@@ -205,6 +214,12 @@ def add_user(db, username, email, password):
 def remove_user(db, username, email, password):
     table = db[USERS_TABLE]
     table.delete(username=username, email=email, password=password)
+
+
+@connect_db
+def admin_remove_user(db, id):
+    table = db[USERS_TABLE]
+    table.delete(id=id)
 
 
 @connect_db
