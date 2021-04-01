@@ -15,7 +15,16 @@ router = APIRouter(tags=["users"], responses={404: {"description": "Not found"}}
 
 @router.post("/register", response_model=User)
 async def register_user(user: UserInDB):
-    data.add_user(user.username, user.email, get_hash(user.password))
+    if data.get_user(user.username):
+        raise HTTPException(
+            status_code=409, detail="User with same username already exists"
+        )
+    if user.username and user.password:
+        data.add_user(user.username, user.email, get_hash(user.password))
+    else:
+        raise HTTPException(
+            status_code=400, detail="Missing required fields"
+        )
     return_user = data.get_user(user.username)
     if not return_user:
         raise HTTPException(
@@ -59,14 +68,26 @@ async def read_own_apps(current_user: User = Depends(get_current_user)):
 
 @router.post("/users/me/apps", response_model=Application)
 async def add_app(app: Application, current_user: User = Depends(get_current_user)):
-    data.add_application(
-        app.image,
-        app.title,
-        app.by,
-        app.groups,
-        app.description,
-        current_user[USERNAME_KEY],
-    )
+    if data.get_application(app.title):
+        raise HTTPException(
+            status_code=409, detail="Application with same title already exists"
+        )
+    if app.title and app.description:
+        image = app.image or "default.png"
+        by = app.by or current_user[USERNAME_KEY]
+        groups = app.group or "other"
+        data.add_application(
+            image,
+            app.title,
+            by,
+            groups,
+            app.description,
+            current_user[USERNAME_KEY],
+        )
+    else:
+        raise HTTPException(
+            status_code=400, detail="Missing required fields"
+        )
     return_app = data.get_application(app.title)
     if not return_app:
         raise HTTPException(status_code=404, detail="Item not found, failed to add")
@@ -94,18 +115,28 @@ async def read_own_application_rating(
 
 
 @router.post("/users/me/ratings/{application}", response_model=Rating)
-async def add_app(
+async def add_application_rating(
     application: str, rating: Rating, current_user: User = Depends(get_current_user)
 ):
-    data.add_rating(
-        current_user[USERNAME_KEY],
-        application,
-        rating.rating,
-        rating.comment,
-    )
+    if rating.rating:
+        data.add_rating(
+            current_user[USERNAME_KEY],
+            application,
+            rating.rating,
+            rating.comment,
+        )
+    else:
+        raise HTTPException(
+            status_code=400, detail="Missing required fields"
+        )
     return_rating = data.get_user_application_ratings(
         current_user[USERNAME_KEY], application
     )
     if not return_rating:
         raise HTTPException(status_code=404, detail="Item not found, failed to add")
     return return_rating
+
+
+@router.delete("/users/me/ratings/{id}")
+async def delete_app_rating(id: int, current_user: User = Depends(get_current_user)):
+    data.remove_rating(id, current_user[USERNAME_KEY])
