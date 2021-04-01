@@ -29,6 +29,7 @@ API_TAGS_METADATA = [
     {"name": "applications", "description": "Application listing"},
     {"name": "ratings", "description": "Ratings and user feedback"},
     {"name": "users", "description": "User data"},
+    {"name": "admin", "description": "Admin only"},
 ]
 
 """
