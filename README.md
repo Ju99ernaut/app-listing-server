@@ -1,8 +1,13 @@
 # App Listing API
 
-A REST API boilerplate project using `fastapi` and `dataset`, setup for easy deployment on `heroku`.
+A REST API for an app store like application project using `fastapi` and `dataset`, setup for easy deployment on `heroku`.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
+## To Do
+-[ ] External auth
+-[ ] Change password
+-[ ] Admin dashboard
 
 ## Usage
 
