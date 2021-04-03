@@ -40,7 +40,9 @@ $ pip install -r requirements.dev.txt`
 Run tests
 
 ```sh
-$ pytest
+$ cd api 
+$ python -m pytest
+$ cd ..
 ```
 
 Run
