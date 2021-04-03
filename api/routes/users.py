@@ -66,12 +66,12 @@ async def update_user_me(
     return data.get_user(current_user.username)
 
 
-@router.get("/users/me/", response_model=User)
+@router.get("/users/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
-@router.delete("/users/me/")
+@router.delete("/users/me")
 async def unregister_users_me(current_user: User = Depends(get_current_user)):
     data.remove_user(
         current_user[USERNAME_KEY], current_user[EMAIL_KEY], current_user[PASSWORD_KEY]
