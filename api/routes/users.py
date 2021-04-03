@@ -4,7 +4,16 @@ from datetime import timedelta
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from .models import Token, TokenData, User, UserInDB, Application, Rating, UpdateUser, UpdateApplication
+from .models import (
+    Token,
+    TokenData,
+    User,
+    UserInDB,
+    Application,
+    Rating,
+    UpdateUser,
+    UpdateApplication,
+)
 from .dependencies import get_current_user
 from utils.password import authenticate, create_access_token, get_hash
 
@@ -22,9 +31,7 @@ async def register_user(user: UserInDB):
     if user.username and user.password:
         data.add_user(user.username, user.email, get_hash(user.password))
     else:
-        raise HTTPException(
-            status_code=400, detail="Missing required fields"
-        )
+        raise HTTPException(status_code=400, detail="Missing required fields")
     return_user = data.get_user(user.username)
     if not return_user:
         raise HTTPException(
@@ -50,7 +57,9 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 
 @router.put("/users/me", response_model=User)
-async def update_user_me(user: UpdateUser, current_user: User = Depends(get_current_user)):
+async def update_user_me(
+    user: UpdateUser, current_user: User = Depends(get_current_user)
+):
     db_user = data.get_user(current_user.username)
     user.id = db_user["id"]
     data.update_user(user)
@@ -83,7 +92,7 @@ async def add_app(app: Application, current_user: User = Depends(get_current_use
     if app.title and app.description:
         image = app.image or "default.png"
         by = app.by or current_user[USERNAME_KEY]
-        groups = app.group or "other"
+        groups = app.groups or "other"
         data.add_application(
             image,
             app.title,
@@ -93,9 +102,7 @@ async def add_app(app: Application, current_user: User = Depends(get_current_use
             current_user[USERNAME_KEY],
         )
     else:
-        raise HTTPException(
-            status_code=400, detail="Missing required fields"
-        )
+        raise HTTPException(status_code=400, detail="Missing required fields")
     return_app = data.get_application(app.title)
     if not return_app:
         raise HTTPException(status_code=404, detail="Item not found, failed to add")
@@ -103,7 +110,9 @@ async def add_app(app: Application, current_user: User = Depends(get_current_use
 
 
 @router.put("/users/me/apps/{title}", response_model=Application)
-async def update_application(title: str, app: UpdateApplication, current_user: User = Depends(get_current_user)):
+async def update_application(
+    title: str, app: UpdateApplication, current_user: User = Depends(get_current_user)
+):
     db_app = data.get_application(title)
     app.id = db_app["id"]
     data.update_application(app)
@@ -142,9 +151,7 @@ async def add_application_rating(
             rating.comment,
         )
     else:
-        raise HTTPException(
-            status_code=400, detail="Missing required fields"
-        )
+        raise HTTPException(status_code=400, detail="Missing required fields")
     return_rating = data.get_user_application_ratings(
         current_user[USERNAME_KEY], application
     )
