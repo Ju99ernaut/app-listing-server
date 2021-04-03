@@ -180,7 +180,8 @@ def admin_remove_rating(db, id):
 def get_average_rating(db, application):
     table = db[RATINGS_TABLE]
     rows = table.find(application=application)
-    avg_rating = sum([rating[RATING_KEY] for rating in rows]) / rows.count()
+    ratings = [rating[RATING_KEY] for rating in rows]
+    avg_rating = sum(ratings) / len(ratings)
     if rows is not None:
         return avg_rating
     return None
@@ -188,8 +189,8 @@ def get_average_rating(db, application):
 
 @connect_db
 def get_all_average_ratings(db):
-    table = db[RATINGS_TABLE]
-    apps = [app[APPLICATION_KEY] for app in table.distinct(APPLICATION_KEY)]
+    table = db[APPS_TABLE]
+    apps = [app[TITLE_KEY] for app in table.all()]
     all_items = []
     for app in apps:
         all_items.append(
