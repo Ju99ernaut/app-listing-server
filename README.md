@@ -1,6 +1,7 @@
 # App Listing API
 
 A REST API for an app store like application project using `fastapi` and `dataset`, setup for easy deployment on `heroku`.
+Use the ADMIN_USERNAME, ADMIN_PASSWORD and ADMIN_EMAIL enviroment variables to add an admin user during startup
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
