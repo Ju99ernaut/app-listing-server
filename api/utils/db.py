@@ -32,7 +32,7 @@ def connect_db(function):
         except:
             url = os.getenv("DATABASE_URL")
 
-        url = url1.replace("postgres:", "postgresql:")
+        url = url.replace("postgres:", "postgresql:")
         global db
         if not db:
             db = dataset.connect(url, engine_kwargs=engine_kwargs)
