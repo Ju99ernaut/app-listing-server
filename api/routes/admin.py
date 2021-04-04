@@ -2,7 +2,7 @@ import data
 
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
-from .models import User, UserInDB, Application, Rating
+from .models import User
 from .dependencies import current_user_is_admin
 
 from constants import *
@@ -13,6 +13,19 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
     dependencies=[Depends(current_user_is_admin)],
 )
+
+
+@router.get("/users", response_model=List[User])
+async def get_all_users():
+    return [user for user in data.admin_get_users()]
+
+
+@router.get("/user/{id}", response_model=User)
+async def get_user(id: int):
+    user = data.admin_get_user(id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return user
 
 
 @router.delete("/user/{id}")

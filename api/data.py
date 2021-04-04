@@ -229,6 +229,22 @@ def remove_user(db, username, email, password):
 
 
 @connect_db
+def admin_get_user(db, id):
+    table = db[USERS_TABLE]
+    row = table.find_one(id=id)
+    if row is not None:
+        return row
+    return None
+
+
+@connect_db
+def admin_get_users(db):
+    table = db[USERS_TABLE]
+    all_items = table.all()
+    return all_items
+
+
+@connect_db
 def admin_remove_user(db, id):
     table = db[USERS_TABLE]
     table.delete(id=id)
