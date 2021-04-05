@@ -9,11 +9,27 @@
     "env": {
         "POOL_SIZE": {
             "description": "Connection pool size, keep the maximum number of connections in mind",
-            "value": "5"
+            "value": "10"
         },
         "MAX_OVERFLOW": {
             "description": "Connection pool maximum overflow, max_connections = pool_size + max_overflow",
-            "value": "2"
+            "value": "4"
+        },
+        "ADMIN_USERNAME": {
+            "description": "Admin username, allows access to admin only endpoints",
+            "value": "admim"
+        },
+        "ADMIN_PASSWORD": {
+            "description": "Admin password, allows access to admin only endpoints",
+            "value": "d4h5bg5!J#$tmg&**IMyrWRc!#CFcg"
+        },
+        "ADMIN_EMAIL": {
+            "description": "Admin email, allows access to admin only endpoints",
+            "value": "admin@admin.admin"
+        },
+        "SECRET_KEY": {
+            "description": "Application secret key",
+            "generator": "secret"
         }
     }
 }
