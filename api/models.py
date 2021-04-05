@@ -36,7 +36,7 @@ class Rating(BaseModel):
 
 class RatingAverage(BaseModel):
     application: str
-    rating: float
+    rating: Optional[float] = 0
 
 
 class Token(BaseModel):

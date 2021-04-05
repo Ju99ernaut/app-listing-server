@@ -194,6 +194,8 @@ def get_average_rating(db, application):
     table = db[RATINGS_TABLE]
     rows = table.find(application=application)
     ratings = [rating[RATING_KEY] for rating in rows]
+    if not len(ratings):
+        return 0
     avg_rating = sum(ratings) / len(ratings)
     if rows is not None:
         return avg_rating
