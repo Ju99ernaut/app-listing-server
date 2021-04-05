@@ -53,17 +53,20 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     access_token = create_access_token(
         data={"sub": user[USERNAME_KEY]}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "expires_in": 3600}
 
 
 @router.put("/users/me", response_model=User)
 async def update_user_me(
     user: UpdateUser, current_user: User = Depends(get_current_user)
 ):
-    db_user = data.get_user(current_user.username)
-    user.id = db_user["id"]
-    data.update_user(user)
-    return data.get_user(current_user.username)
+    if data.get_user(user.username):
+        raise HTTPException(
+            status_code=409, detail="User with same username already exists"
+        )
+    db_user = data.get_user(current_user[USERNAME_KEY])
+    data.update_user(db_user["id"], user)
+    return data.get_user(user.username or current_user[USERNAME_KEY])
 
 
 @router.get("/users/me", response_model=User)
@@ -113,10 +116,15 @@ async def add_app(app: Application, current_user: User = Depends(get_current_use
 async def update_application(
     title: str, app: UpdateApplication, current_user: User = Depends(get_current_user)
 ):
+    if data.get_application(app.title):
+        raise HTTPException(
+            status_code=409, detail="Application with same title already exists"
+        )
     db_app = data.get_application(title)
-    app.id = db_app["id"]
-    data.update_application(app)
-    return data.get_application(title)
+    if db_app[OWNER_KEY] != current_user[USERNAME_KEY]:
+        raise HTTPException(status_code=405, detail="Not allowed")
+    data.update_application(db_app["id"], app)
+    return data.get_application(app.title or title)
 
 
 @router.delete("/users/me/apps/{title}")
