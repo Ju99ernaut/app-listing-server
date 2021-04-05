@@ -2,8 +2,8 @@ import data
 
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
-from .models import User
-from .dependencies import current_user_is_admin
+from models import User
+from dependencies import current_user_is_admin
 
 from constants import *
 

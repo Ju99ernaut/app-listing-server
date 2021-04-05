@@ -2,7 +2,7 @@ import data
 
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
-from .models import Rating, RatingAverage
+from models import Rating, RatingAverage
 
 router = APIRouter(
     prefix="/ratings", tags=["ratings"], responses={404: {"description": "Not found"}}

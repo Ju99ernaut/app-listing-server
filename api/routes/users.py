@@ -4,7 +4,7 @@ from datetime import timedelta
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from .models import (
+from models import (
     Token,
     TokenData,
     User,
@@ -14,7 +14,7 @@ from .models import (
     UpdateUser,
     UpdateApplication,
 )
-from .dependencies import get_current_user
+from dependencies import get_current_user
 from utils.password import authenticate, create_access_token, get_hash
 
 from constants import *

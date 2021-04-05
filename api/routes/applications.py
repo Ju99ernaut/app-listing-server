@@ -2,7 +2,7 @@ import data
 
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
-from .models import Application
+from models import Application
 
 router = APIRouter(
     prefix="/apps", tags=["applications"], responses={404: {"description": "Not found"}}
