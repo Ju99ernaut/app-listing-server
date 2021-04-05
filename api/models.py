@@ -5,16 +5,19 @@ from datetime import datetime
 
 class Application(BaseModel):
     id: Optional[int] = None
-    image: str
+    image: Optional[str] = None
     title: str
-    by: str
-    groups: str
+    by: Optional[str] = None
+    groups: Optional[str] = None
     description: str
     updated: Optional[datetime] = None
     owner: Optional[str] = None
 
 
 class UpdateApplication(BaseModel):
+    def __getitem__(self, item):
+        return getattr(self, item)
+
     image: Optional[str] = None
     title: Optional[str] = None
     by: Optional[str] = None
@@ -39,6 +42,7 @@ class RatingAverage(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    expires_in: Optional[int] = None
 
 
 class TokenData(BaseModel):
@@ -54,6 +58,9 @@ class User(BaseModel):
 
 
 class UpdateUser(BaseModel):
+    def __getitem__(self, item):
+        return getattr(self, item)
+
     username: Optional[str] = None
     email: Optional[str] = None
 

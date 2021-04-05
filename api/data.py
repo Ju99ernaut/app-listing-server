@@ -74,21 +74,34 @@ def add_application(db, image, title, by, groups, description, owner):
 
 
 @connect_db
-def update_application(db, data):
-    table = db[APPS_TABLE]
-    table.update(data, ["ïd"])
+def update_application(db, id, data):
+    table_apps = db[APPS_TABLE]
+    table_ratings = db[RATINGS_TABLE]
+    app = table_apps.find_one(id=id)
+    if data[TITLE_KEY]:
+        rows = table_ratings.find(application=app[TITLE_KEY])
+        updated = ({**row, **dict(application=data[TITLE_KEY])} for row in rows)
+        table_ratings.upsert_many(updated, ["id"])
+    table_apps.update(
+        {**app, **{k: v for k, v in data.dict().items() if v is not None}}, ["id"]
+    )
 
 
 @connect_db
 def remove_application(db, title, owner):
-    table = db[APPS_TABLE]
-    table.delete(title=title, owner=owner)
+    table_apps = db[APPS_TABLE]
+    table_ratings = db[RATINGS_TABLE]
+    table_apps.delete(title=title, owner=owner)
+    table_ratings.delete(application=title)
 
 
 @connect_db
-def admin_remove_application(db, id, owner):
-    table = db[APPS_TABLE]
-    table.delete(id=id)
+def admin_remove_application(db, id):
+    table_apps = db[APPS_TABLE]
+    table_ratings = db[RATINGS_TABLE]
+    app = table_apps.find_one(id=id)
+    table_ratings.delete(application=app[TITLE_KEY])
+    table_apps.delete(id=id)
 
 
 @connect_db
@@ -217,15 +230,27 @@ def add_user(db, username, email, password):
 
 
 @connect_db
-def update_user(db, data):
-    table = db[USERS_TABLE]
-    table.update(data, ["ïd"])
+def update_user(db, id, data):
+    table_users = db[USERS_TABLE]
+    table_apps = db[APPS_TABLE]
+    user = table_users.find_one(id=id)
+    if data[USERNAME_KEY]:
+        rows = table_apps.find(owner=user[USERNAME_KEY])
+        updated = ({**row, **dict(owner=data[USERNAME_KEY])} for row in rows)
+        table_apps.upsert_many(updated, ["id"])
+    table_users.update(
+        {"id": id, **{k: v for k, v in data.dict().items() if v is not None}}, ["id"]
+    )
 
 
 @connect_db
 def remove_user(db, username, email, password):
-    table = db[USERS_TABLE]
-    table.delete(username=username, email=email, password=password)
+    table_users = db[USERS_TABLE]
+    table_apps = db[APPS_TABLE]
+    table_ratings = db[RATINGS_TABLE]
+    table_users.delete(username=username, email=email, password=password)
+    table_apps.delete(owner=username)
+    table_ratings.delete(user=username)
 
 
 @connect_db
@@ -246,8 +271,13 @@ def admin_get_users(db):
 
 @connect_db
 def admin_remove_user(db, id):
-    table = db[USERS_TABLE]
-    table.delete(id=id)
+    table_users = db[USERS_TABLE]
+    table_apps = db[APPS_TABLE]
+    table_ratings = db[RATINGS_TABLE]
+    user = table_users.find_one(id=id)
+    table_apps.delete(owner=user[USERNAME_KEY])
+    table_ratings.delete(user=user[USERNAME_KEY])
+    table_users.delete(id=id)
 
 
 @connect_db
