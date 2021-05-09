@@ -1,7 +1,7 @@
-import data
+import data.admin as data
 
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from models import User
 from dependencies import current_user_is_admin
 
@@ -24,7 +24,9 @@ async def get_all_users():
 async def get_user(id: int):
     user = data.admin_get_user(id)
     if not user:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
+        )
     return user
 
 
