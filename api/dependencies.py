@@ -31,7 +31,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 
+async def current_user_is_active(current_user: User = Depends(get_current_user)):
+    if not current_user[ACTIVE_KEY]:
+        raise HTTPException(status_code=400, detail="Not verified")
+    return current_user
+
+
 async def current_user_is_admin(current_user: User = Depends(get_current_user)):
-    if current_user.admin:
+    if current_user[ROLE_KEY] != "admin":
         raise HTTPException(status_code=400, detail="Not admin")
     return current_user
