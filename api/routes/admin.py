@@ -5,8 +5,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from models import User
 from dependencies import current_user_is_admin
 
-from constants import *
-
 router = APIRouter(
     prefix="/admin",
     tags=["admin"],

@@ -7,13 +7,13 @@ from routes import users, applications, ratings, admin
 from data import setup
 import config
 
-from constants import *
+from constants import API_TAGS_METADATA
 
 config.parse_args()
 app = FastAPI(
     title="App Listing",
     description="Public API Rally community applications listing",
-    version="1.0.0",
+    version="1.0.1",
     openapi_tags=API_TAGS_METADATA,
 )
 

@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from models import TokenData, User
 
-from constants import *
+from constants import SECRET_KEY, ALGORITHM, ACTIVE_KEY, ROLE_KEY
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth")
 
@@ -33,11 +33,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 async def current_user_is_active(current_user: User = Depends(get_current_user)):
     if not current_user[ACTIVE_KEY]:
-        raise HTTPException(status_code=400, detail="Not verified")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Not verified"
+        )
     return current_user
 
 
 async def current_user_is_admin(current_user: User = Depends(get_current_user)):
     if current_user[ROLE_KEY] != "admin":
-        raise HTTPException(status_code=400, detail="Not admin")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Not admin")
     return current_user

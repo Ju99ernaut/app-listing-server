@@ -5,8 +5,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from models import User, Application, ApplicationReturn
 from dependencies import get_current_user, current_user_is_active
 
+from constants import USERNAME_KEY, OWNER_KEY
+
 router = APIRouter(
-    prefix="/apps", tags=["applications"], responses={404: {"description": "Not found"}}
+    prefix="/apps",
+    tags=["applications"],
+    responses={404: {"description": "Not found"}},
 )
 
 

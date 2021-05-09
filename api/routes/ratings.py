@@ -6,7 +6,9 @@ from models import User, Rating, RatingAverage, RatingReturn
 from dependencies import get_current_user, current_user_is_active
 
 router = APIRouter(
-    prefix="/ratings", tags=["ratings"], responses={404: {"description": "Not found"}}
+    prefix="/ratings",
+    tags=["ratings"],
+    responses={404: {"description": "Not found"}},
 )
 
 
@@ -88,4 +90,4 @@ async def add_application_rating(
 async def delete_app_rating(
     id: int, current_user: User = Depends(current_user_is_active)
 ):
-    data.remove_rating(id, current_user[USERNAME_KEY])
+    data.remove_rating(id, current_user["id"])

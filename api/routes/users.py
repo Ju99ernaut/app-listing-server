@@ -8,7 +8,7 @@ from models import Token, TokenData, User, UserInDB, UpdateUser, UserRegister
 from dependencies import get_current_user, current_user_is_active
 from utils.password import authenticate, create_access_token, get_hash
 
-from constants import *
+from constants import USERNAME_KEY, EMAIL_KEY, PASSWORD_KEY, ACCESS_TOKEN_EXPIRE_MINUTES
 
 router = APIRouter(tags=["users"], responses={404: {"description": "Not found"}})
 
