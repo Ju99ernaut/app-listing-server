@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, List
+from typing import Optional, List, Union
 from pydantic import BaseModel, EmailStr, validator
 from datetime import datetime
 
@@ -62,8 +62,14 @@ class Application(BaseModel):
     image: Optional[str] = None
     title: str
     by: Optional[str] = None
-    groups: List[str]
+    groups: Union[List[str], str]
     description: str
+
+    @validator("groups")
+    def stringify(cls, v):
+        if type(v) == list:
+            return ",".join(v)
+        return v
 
 
 class ApplicationRef(BaseModel):
@@ -71,9 +77,15 @@ class ApplicationRef(BaseModel):
     image: Optional[str] = None
     title: str
     by: Optional[str] = None
-    groups: List[str]
+    groups: Union[List[str], str]
     description: str
     updated: Optional[datetime] = None
+
+    @validator("groups")
+    def listify(cls, v):
+        if type(v) == str:
+            return v.split(",")
+        return v
 
 
 class ApplicationReturn(ApplicationRef):
@@ -94,8 +106,6 @@ class DocumentationReturn(BaseModel):
 
 
 class Rating(BaseModel):
-    user: int
-    application: int
     rating: float
     comment: Optional[str] = None
 
@@ -112,3 +122,7 @@ class RatingReturn(BaseModel):
 class RatingAverage(BaseModel):
     application: ApplicationRef
     rating: Optional[float] = 0
+
+
+class Message(BaseModel):
+    msg: Optional[str] = ""

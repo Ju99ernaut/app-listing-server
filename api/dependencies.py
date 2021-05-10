@@ -1,4 +1,4 @@
-import data
+import data.users as data
 from typing import Optional
 
 from fastapi import Depends, HTTPException, status

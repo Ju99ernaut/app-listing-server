@@ -1,8 +1,8 @@
 import data.applications as data
 
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
-from models import User, Application, ApplicationReturn
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query, Path, status
+from models import User, Application, ApplicationReturn, Message
 from dependencies import get_current_user, current_user_is_active
 
 from constants import USERNAME_KEY, OWNER_KEY
@@ -15,13 +15,16 @@ router = APIRouter(
 
 
 @router.get("", response_model=List[ApplicationReturn])
-async def read_apps():
-    return [apps for apps in data.get_all_applications()]
+async def read_apps(
+    page: Optional[int] = Query(0, minimum=0, description="Page number"),
+    size: Optional[int] = Query(50, maximum=100, description="Page size"),
+):
+    return data.get_all_applications()
 
 
-@router.get("/{id}", response_model=ApplicationReturn)
-async def read_app(id: int):
-    app = data.get_application_by_id(id)
+@router.get("/{application}", response_model=ApplicationReturn)
+async def read_app(application: int = Path(..., description="Application ID")):
+    app = data.get_application_by_id(application)
     if not app:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
@@ -30,8 +33,14 @@ async def read_app(id: int):
 
 
 @router.get("/user/me", response_model=List[ApplicationReturn])
-async def read_own_apps(current_user: User = Depends(get_current_user)):
-    return [apps for apps in data.get_user_applications(current_user["id"])]
+async def read_own_apps(
+    current_user: User = Depends(get_current_user),
+    page: Optional[int] = Query(0, minimum=0, description="Page number"),
+    size: Optional[int] = Query(50, maximum=100, description="Page size"),
+):
+    return data.get_user_applications(
+        current_user["id"]
+    )
 
 
 @router.post("/user/me", response_model=ApplicationReturn)
@@ -68,10 +77,10 @@ async def add_app(
     return return_app
 
 
-@router.put("/user/me/{id}", response_model=ApplicationReturn)
+@router.put("/user/me/{application}", response_model=ApplicationReturn)
 async def update_application(
-    id: int,
     app: Application,
+    application: int = Path(..., description="Application ID"),
     current_user: User = Depends(current_user_is_active),
 ):
     if data.get_application(app.title):
@@ -79,8 +88,8 @@ async def update_application(
             status_code=status.HTTP_409_CONFLICT,
             detail="Application with same title already exists",
         )
-    db_app = data.get_application_by_id(id)
-    if db_app[OWNER_KEY] != current_user[USERNAME_KEY]:
+    db_app = data.get_application_by_id(application)
+    if db_app[OWNER_KEY]["id"] != current_user["id"]:
         raise HTTPException(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail="Not allowed"
         )
@@ -88,6 +97,14 @@ async def update_application(
     return data.get_application(app.title or title)
 
 
-@router.delete("/user/me/{id}")
-async def delete_app(id: int, current_user: User = Depends(current_user_is_active)):
-    data.remove_application(id, current_user["id"])
+@router.delete("/user/me/{application}", response_model=Message)
+async def delete_app(
+    application: int = Path(..., description="Application ID"),
+    current_user: User = Depends(current_user_is_active),
+):
+    data.remove_application(application, current_user["id"])
+    if data.get_application_by_id(application):
+        raise HTTPException(
+            status_code=status.HTTP_417_EXPECTATION_FAILED, detail="Failed to delete"
+        )
+    return {"msg": "deleted"}

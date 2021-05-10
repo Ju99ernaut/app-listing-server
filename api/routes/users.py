@@ -4,7 +4,7 @@ from datetime import timedelta
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from models import Token, TokenData, User, UserInDB, UpdateUser, RegisterUser
+from models import Token, TokenData, User, UserInDB, UpdateUser, RegisterUser, Message
 from dependencies import get_current_user, current_user_is_active
 from utils.password import authenticate, create_access_token, get_hash
 
@@ -70,8 +70,13 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
-@router.delete("/users/me")
-async def unregister_users_me(current_user: User = Depends(get_current_user)):
+@router.delete("/users/me", response_model=Message)
+async def unregister_users_me(current_user: UserInDB = Depends(get_current_user)):
     data.remove_user(
         current_user[USERNAME_KEY], current_user[EMAIL_KEY], current_user[PASSWORD_KEY]
     )
+    if data.get_user(current_user[USERNAME_KEY]):
+        raise HTTPException(
+            status_code=status.HTTP_417_EXPECTATION_FAILED, detail="Failed to delete"
+        )
+    return {"msg": "deleted"}
