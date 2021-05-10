@@ -1,14 +1,14 @@
 import os
 
-from constants import *
+from constants import USERS_TABLE, APPS_TABLE, RATINGS_TABLE
 
 from utils.db import connect_db
 
 
 @connect_db
-def admin_get_user(db, id):
+def admin_get_user(db, user_id):
     table = db[USERS_TABLE]
-    row = table.find_one(id=id)
+    row = table.find_one(id=user_id)
     if row is not None:
         return row
     return None
@@ -22,25 +22,24 @@ def admin_get_users(db):
 
 
 @connect_db
-def admin_remove_user(db, id):
+def admin_remove_user(db, user_id):
     table_users = db[USERS_TABLE]
     table_apps = db[APPS_TABLE]
     table_ratings = db[RATINGS_TABLE]
-    user = table_users.find_one(id=id)
-    table_apps.delete(owner=user[USERNAME_KEY])
-    table_ratings.delete(user=user[USERNAME_KEY])
-    table_users.delete(id=id)
+    table_apps.delete(owner=user_id)
+    table_ratings.delete(user=user_id)
+    table_users.delete(id=user_id)
 
 
 @connect_db
-def admin_remove_application(db, id):
+def admin_remove_application(db, app_id):
     table_apps = db[APPS_TABLE]
     table_ratings = db[RATINGS_TABLE]
-    table_ratings.delete(application=id)
-    table_apps.delete(id=id)
+    table_ratings.delete(application=app_id)
+    table_apps.delete(id=app_id)
 
 
 @connect_db
-def admin_remove_rating(db, id):
+def admin_remove_rating(db, rating_id):
     table = db[RATINGS_TABLE]
-    table.delete(id=id)
+    table.delete(id=rating_id)

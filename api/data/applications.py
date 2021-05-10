@@ -23,56 +23,63 @@ def add_application(db, image, title, by, groups, description, owner):
 
 
 @connect_db
-def update_application(db, id, data):
+def update_application(db, app_id, data):
     table_apps = db[APPS_TABLE]
     table_ratings = db[RATINGS_TABLE]
-    ##app = table_apps.find_one(id=id)
-    ##if data[TITLE_KEY]:
-    ##    rows = table_ratings.find(application=app[TITLE_KEY])
-    ##    updated = ({**row, **dict(application=data[TITLE_KEY])} for row in rows)
-    ##    table_ratings.upsert_many(updated, ["id"])
     table_apps.update(
-        {"id": id, **{k: v for k, v in data.dict().items() if v is not None}}, ["id"]
+        {"id": app_id, **{k: v for k, v in data.dict().items() if v is not None}},
+        ["id"],
     )
 
 
 @connect_db
-def remove_application(db, title, owner):
+def remove_application(db, app_id, owner):
     table_apps = db[APPS_TABLE]
     table_ratings = db[RATINGS_TABLE]
-    deleted = table_apps.delete(title=title, owner=owner)  #!
-    table_ratings.delete(application=deleted["id"])
+    table_apps.delete(id=app_id, owner=owner)
+    table_ratings.delete(application=app_id)
 
 
 @connect_db
-def get_application_by_id(db, id):
-    table = db[APPS_TABLE]
-    row = table.find_one(id=id)
-    if row is not None:
-        return row
+def get_application_by_id(db, app_id):
+    table_apps = db[APPS_TABLE]
+    table_users = db[USERS_TABLE]
+    app = table_apps.find_one(id=app_id)
+    if app is not None:
+        app[OWNER_KEY] = table_users.find_one(id=app[OWNER_KEY])
+        return app
     return None
 
 
 @connect_db
 def get_application(db, title):
-    table = db[APPS_TABLE]
-    row = table.find_one(title=title)
-    if row is not None:
-        return row
+    table_apps = db[APPS_TABLE]
+    table_users = db[USERS_TABLE]
+    app = table_apps.find_one(title=title)
+    if app is not None:
+        app[OWNER_KEY] = table_users.find_one(id=app[OWNER_KEY])
+        return app
     return None
 
 
 @connect_db
 def get_user_applications(db, owner):
-    table = db[APPS_TABLE]
-    rows = table.find(owner=owner)
+    table_apps = db[APPS_TABLE]
+    rows = table_apps.find(owner=owner)
     if rows is not None:
-        return rows
+        table_users = db[USERS_TABLE]
+        user = table_users.find_one(id=owner)
+
+        return [{**apps, OWNER_KEY: user} for apps in rows]
     return None
 
 
 @connect_db
 def get_all_applications(db):
-    table = db[APPS_TABLE]
-    all_items = table.all()
-    return all_items
+    table_apps = db[APPS_TABLE]
+    all_items = table_apps.all()
+    table_users = db[USERS_TABLE]
+    return [
+        {**apps, OWNER_KEY: table_users.find_one(id=apps[OWNER_KEY])}
+        for apps in all_items
+    ]

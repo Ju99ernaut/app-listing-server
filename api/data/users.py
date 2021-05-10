@@ -15,23 +15,19 @@ def add_user(db, username, email, password):
             EMAIL_KEY: email,
             PASSWORD_KEY: password,
             JOINED_KEY: datetime.utcnow(),
-            ACTIVE_KEY: False,
+            ACTIVE_KEY: True,
             ROLE_KEY: "user",
         },
     )
 
 
 @connect_db
-def update_user(db, id, data):
+def update_user(db, user_id, data):
     table_users = db[USERS_TABLE]
     table_apps = db[APPS_TABLE]
-    ##user = table_users.find_one(id=id)
-    ##if data[USERNAME_KEY]:
-    ##    rows = table_apps.find(owner=user[USERNAME_KEY])
-    ##    updated = ({**row, **dict(owner=data[USERNAME_KEY])} for row in rows)
-    ##    table_apps.upsert_many(updated, ["id"])
     table_users.update(
-        {"id": id, **{k: v for k, v in data.dict().items() if v is not None}}, ["id"]
+        {"id": user_id, **{k: v for k, v in data.dict().items() if v is not None}},
+        ["id"],
     )
 
 
@@ -40,7 +36,8 @@ def remove_user(db, username, email, password):
     table_users = db[USERS_TABLE]
     table_apps = db[APPS_TABLE]
     table_ratings = db[RATINGS_TABLE]
-    deleted = table_users.delete(username=username, email=email, password=password)  #!
+    deleted = table_users.find_one(username=username)
+    table_users.delete(username=username, email=email, password=password)
     table_apps.delete(owner=deleted["id"])
     table_ratings.delete(user=deleted["id"])
 
@@ -55,9 +52,9 @@ def get_user(db, username):
 
 
 @connect_db
-def get_user_by_id(db, id):
+def get_user_by_id(db, user_id):
     table = db[USERS_TABLE]
-    row = table.find_one(id=id)
+    row = table.find_one(id=user_id)
     if row is not None:
         return row
     return None
