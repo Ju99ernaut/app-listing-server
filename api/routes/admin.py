@@ -10,6 +10,7 @@ router = APIRouter(
     tags=["admin"],
     responses={404: {"description": "Not found"}},
     dependencies=[Depends(current_user_is_admin)],
+    include_in_schema=False,
 )
 
 

@@ -4,7 +4,7 @@ from datetime import timedelta
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from models import Token, TokenData, User, UserInDB, UpdateUser, UserRegister
+from models import Token, TokenData, User, UserInDB, UpdateUser, RegisterUser
 from dependencies import get_current_user, current_user_is_active
 from utils.password import authenticate, create_access_token, get_hash
 
@@ -14,7 +14,7 @@ router = APIRouter(tags=["users"], responses={404: {"description": "Not found"}}
 
 
 @router.post("/register", response_model=User)
-async def register_user(user: UserRegister):
+async def register_user(user: RegisterUser):
     if data.get_user(user.username):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

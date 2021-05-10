@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, validator
 from datetime import datetime
 
 
@@ -19,12 +19,15 @@ class RoleName(str, Enum):
     admin = "admin"
 
 
-class User(BaseModel):
+class UserRef(BaseModel):
     id: Optional[int] = None
     username: str
-    email: str
     joined: Optional[datetime] = None
     active: bool
+
+
+class User(UserRef):
+    email: EmailStr
     role: RoleName
 
 
@@ -33,12 +36,18 @@ class UpdateUser(BaseModel):
         return getattr(self, item)
 
     username: Optional[str] = None
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
+
+    @validator("username")
+    def no_space(cls, v):
+        if " " in v:
+            raise ValueError("value must not contain spaces")
+        return v
 
 
-class UserRegister(BaseModel):
+class RegisterUser(UpdateUser):
     username: str
-    email: str
+    email: EmailStr
     password: str
 
 
@@ -57,7 +66,7 @@ class Application(BaseModel):
     description: str
 
 
-class ApplicationReturn(BaseModel):
+class ApplicationRef(BaseModel):
     id: Optional[int] = None
     image: Optional[str] = None
     title: str
@@ -65,21 +74,23 @@ class ApplicationReturn(BaseModel):
     groups: List[str]
     description: str
     updated: Optional[datetime] = None
-    owner: User
+
+
+class ApplicationReturn(ApplicationRef):
+    owner: UserRef
 
 
 class Documentation(BaseModel):
     application: int
     documentation: str
-    updated: Optional[datetime] = None
 
 
 class DocumentationReturn(BaseModel):
     id: Optional[int] = None
-    application: ApplicationReturn
     documentation: str
+    application: ApplicationRef
     updated: Optional[datetime] = None
-    owner: User
+    owner: UserRef
 
 
 class Rating(BaseModel):
@@ -91,13 +102,13 @@ class Rating(BaseModel):
 
 class RatingReturn(BaseModel):
     id: Optional[int] = None
-    user: User
-    application: ApplicationReturn
+    user: UserRef
+    application: ApplicationRef
     rating: float
     comment: Optional[str] = None
     updated: Optional[datetime] = None
 
 
 class RatingAverage(BaseModel):
-    application: ApplicationReturn
+    application: ApplicationRef
     rating: Optional[float] = 0

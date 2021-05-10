@@ -29,12 +29,12 @@ async def read_app(id: int):
     return app
 
 
-@router.get("/users/me", response_model=List[ApplicationReturn])
+@router.get("/user/me", response_model=List[ApplicationReturn])
 async def read_own_apps(current_user: User = Depends(get_current_user)):
     return [apps for apps in data.get_user_applications(current_user["id"])]
 
 
-@router.post("/users/me", response_model=ApplicationReturn)
+@router.post("/user/me", response_model=ApplicationReturn)
 async def add_app(
     app: Application, current_user: User = Depends(current_user_is_active)
 ):
@@ -68,7 +68,7 @@ async def add_app(
     return return_app
 
 
-@router.put("/users/me/{id}", response_model=ApplicationReturn)
+@router.put("/user/me/{id}", response_model=ApplicationReturn)
 async def update_application(
     id: int,
     app: Application,
@@ -88,6 +88,6 @@ async def update_application(
     return data.get_application(app.title or title)
 
 
-@router.delete("/users/me/{id}")
+@router.delete("/user/me/{id}")
 async def delete_app(id: int, current_user: User = Depends(current_user_is_active)):
     data.remove_application(id, current_user["id"])
