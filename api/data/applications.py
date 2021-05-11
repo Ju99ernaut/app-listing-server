@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 
 from constants import *
@@ -24,9 +23,8 @@ def add_application(db, image, title, by, groups, description, owner):
 
 @connect_db
 def update_application(db, app_id, data):
-    table_apps = db[APPS_TABLE]
-    table_ratings = db[RATINGS_TABLE]
-    table_apps.update(
+    table = db[APPS_TABLE]
+    table.update(
         {"id": app_id, **{k: v for k, v in data.dict().items() if v is not None}},
         ["id"],
     )
@@ -35,8 +33,10 @@ def update_application(db, app_id, data):
 @connect_db
 def remove_application(db, app_id, owner):
     table_apps = db[APPS_TABLE]
+    table_docs = db[DOCS_TABLE]
     table_ratings = db[RATINGS_TABLE]
     table_apps.delete(id=app_id, owner=owner)
+    table_docs.delete(application=app_id)
     table_ratings.delete(application=app_id)
 
 

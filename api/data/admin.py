@@ -1,6 +1,4 @@
-import os
-
-from constants import USERS_TABLE, APPS_TABLE, RATINGS_TABLE
+from constants import USERS_TABLE, APPS_TABLE, RATINGS_TABLE, DOCS_TABLE
 
 from utils.db import connect_db
 
@@ -26,17 +24,21 @@ def admin_remove_user(db, user_id):
     table_users = db[USERS_TABLE]
     table_apps = db[APPS_TABLE]
     table_ratings = db[RATINGS_TABLE]
+    # table_docs = db[DOCS_TABLE]
     table_apps.delete(owner=user_id)
     table_ratings.delete(user=user_id)
     table_users.delete(id=user_id)
+    # table_docs.delete(application=app_id)
 
 
 @connect_db
 def admin_remove_application(db, app_id):
     table_apps = db[APPS_TABLE]
     table_ratings = db[RATINGS_TABLE]
+    table_docs = db[DOCS_TABLE]
     table_ratings.delete(application=app_id)
     table_apps.delete(id=app_id)
+    table_docs.delete(application=app_id)
 
 
 @connect_db

@@ -22,7 +22,6 @@ from utils.password import get_hash
     application: application
     documentation: str
     updated: datetime
-    owner: user
     
     #################### ratings ##########################
     user: user
