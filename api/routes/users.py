@@ -2,13 +2,20 @@ import data.users as data
 from datetime import timedelta
 
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from fastapi.security import OAuth2PasswordRequestForm
 from models import Token, TokenData, User, UserInDB, UpdateUser, RegisterUser, Message
-from dependencies import get_current_user, current_user_is_active
+from dependencies import get_current_user, current_user_is_active, get_email
 from utils.password import authenticate, create_access_token, get_hash
+from mail.send import user as send_email
 
-from constants import USERNAME_KEY, EMAIL_KEY, PASSWORD_KEY, ACCESS_TOKEN_EXPIRE_MINUTES
+from constants import (
+    USERNAME_KEY,
+    EMAIL_KEY,
+    PASSWORD_KEY,
+    ACTIVE_KEY,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+)
 
 router = APIRouter(tags=["users"], responses={404: {"description": "Not found"}})
 
@@ -32,6 +39,17 @@ async def register_user(user: RegisterUser):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Item not found, failed to register",
         )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    confirm_token = create_access_token(
+        data={"sub": user[EMAIL_KEY]}, expires_delta=access_token_expires
+    )
+    await send_email(
+        user[EMAIL_KEY],
+        {
+            "username": user[USERNAME_KEY],
+            "confirm_url": f"http://127.0.0.1:8000/confirm/{confirm_token}",
+        },
+    )
     return return_user
 
 
@@ -49,6 +67,32 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         data={"sub": user[USERNAME_KEY]}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer", "expires_in": 3600}
+
+
+@router.get("/confirm/{token}", response_model=Message)
+async def confirm_access_token(
+    token: str = Path(..., description="Token to cofirm email")
+):
+    email = await get_email(token)
+    user = data.get_user_by_email(email)
+    data.activate_user(user["id"], {ACTIVE_KEY: True})
+    return {"msg": "confirmed"}
+
+
+@router.post("/resend", response_model=Message)
+async def regenerate_confirm_email(user: User = Depends(current_user_is_active)):
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    confirm_token = create_access_token(
+        data={"sub": user[EMAIL_KEY]}, expires_delta=access_token_expires
+    )
+    await send_email(
+        user[EMAIL_KEY],
+        {
+            "username": user[USERNAME_KEY],
+            "confirm_url": f"http://127.0.0.1:8000/confirm/{confirm_token}",
+        },
+    )
+    return {"msg": "resent"}
 
 
 @router.put("/users/me", response_model=User)

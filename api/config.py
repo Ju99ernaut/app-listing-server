@@ -17,6 +17,12 @@ arg_parser.add("--host", default="127.0.0.1", help="Bind socket to this host")
 
 arg_parser.add("--port", default="8000", help="Bind socket to this port")
 
+arg_parser.add("-m", "--mail_port", default="587", help="email TSL port")
+
+arg_parser.add("-f", "--mail_from", default="App Listing", help="preffered from name")
+
+arg_parser.add("-s", "--mail_server", default="smtp.gmail.com", help="your mail server")
+
 
 def parse_args():
     global CONFIG
