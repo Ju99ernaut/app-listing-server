@@ -37,6 +37,16 @@
             "value": "d4h5bg5!J#$tmg&**IMyrWRc!#CFcg",
             "required": false
         },
+        "BACKEND_URL": {
+            "description": "Backend root used for email redirects.",
+            "value": "https://app-name.herokuapp.com",
+            "required": false
+        },
+        "FRONTEND_URL": {
+            "description": "Fronend root used for email redirects",
+            "value": "https://front.end",
+            "required": false
+        },
         "SECRET_KEY": {
             "description": "Application secret key",
             "generator": "secret"

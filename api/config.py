@@ -33,6 +33,18 @@ arg_parser.add("-f", "--mail_from", default="App Listing", help="preffered from 
 
 arg_parser.add("-s", "--mail_server", default="smtp.gmail.com", help="your mail server")
 
+arg_parser.add(
+    "--backend",
+    default="http://127.0.0.1:8000",
+    help="Backend root used for email redirects",
+)
+
+arg_parser.add(
+    "--frontend",
+    default="http://127.0.0.1:3000",
+    help="Frontend root used for email redirects",
+)
+
 
 def parse_args():
     global CONFIG
