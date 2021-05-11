@@ -34,6 +34,7 @@ ROLE_KEY = "role"
 API_TAGS_METADATA = [
     {"name": "users", "description": "User data"},
     {"name": "applications", "description": "Application listing"},
+    {"name": "documentation", "description": "More detailed app info"},
     {"name": "ratings", "description": "Ratings and user feedback"},
     # {"name": "admin", "description": "Admin only"},
 ]

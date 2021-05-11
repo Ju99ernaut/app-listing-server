@@ -2,7 +2,7 @@ import uvicorn
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import users, applications, ratings, admin
+from routes import users, applications, ratings, admin, documentation
 
 from data import setup
 import config
@@ -29,10 +29,11 @@ app.include_router(admin.router)
 app.include_router(ratings.router)
 app.include_router(applications.router)
 app.include_router(users.router)
+app.include_router(documentation.router)
 
 
 @app.get("/")
-async def root():
+async def docs_info():
     return {"docs": "api documentation at /docs or /redoc"}
 
 
