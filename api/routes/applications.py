@@ -22,6 +22,15 @@ async def read_apps(
     return data.get_all_applications()
 
 
+@router.get("/me", response_model=List[ApplicationReturn])
+async def read_own_apps(
+    current_user: User = Depends(get_current_user),
+    page: Optional[int] = Query(0, minimum=0, description="Page number"),
+    size: Optional[int] = Query(50, maximum=100, description="Page size"),
+):
+    return data.get_user_applications(current_user["id"])
+
+
 @router.get("/{application}", response_model=ApplicationReturn)
 async def read_app(application: int = Path(..., description="Application ID")):
     app = data.get_application_by_id(application)
@@ -32,18 +41,7 @@ async def read_app(application: int = Path(..., description="Application ID")):
     return app
 
 
-@router.get("/user/me", response_model=List[ApplicationReturn])
-async def read_own_apps(
-    current_user: User = Depends(get_current_user),
-    page: Optional[int] = Query(0, minimum=0, description="Page number"),
-    size: Optional[int] = Query(50, maximum=100, description="Page size"),
-):
-    return data.get_user_applications(
-        current_user["id"]
-    )
-
-
-@router.post("/user/me", response_model=ApplicationReturn)
+@router.post("", response_model=ApplicationReturn)
 async def add_app(
     app: Application, current_user: User = Depends(current_user_is_active)
 ):
@@ -77,7 +75,7 @@ async def add_app(
     return return_app
 
 
-@router.put("/user/me/{application}", response_model=ApplicationReturn)
+@router.put("/{application}", response_model=ApplicationReturn)
 async def update_application(
     app: Application,
     application: int = Path(..., description="Application ID"),
@@ -97,7 +95,7 @@ async def update_application(
     return data.get_application(app.title or title)
 
 
-@router.delete("/user/me/{application}", response_model=Message)
+@router.delete("/{application}", response_model=Message)
 async def delete_app(
     application: int = Path(..., description="Application ID"),
     current_user: User = Depends(current_user_is_active),

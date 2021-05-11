@@ -21,7 +21,7 @@ async def read_ratings(
     return [ratings for ratings in data.get_all_ratings()]
 
 
-@router.get("/users/{user}", response_model=List[RatingReturn])
+@router.get("/user/{user}", response_model=List[RatingReturn])
 async def read_user_ratings(
     user: int = Path(..., description="User ID"),
     page: Optional[int] = Query(0, minimum=0, description="Page number"),
@@ -58,7 +58,7 @@ async def read_all_app_averages(
     return data.get_all_average_ratings()
 
 
-@router.get("/user/me", response_model=List[RatingReturn])
+@router.get("/me", response_model=List[RatingReturn])
 async def read_own_ratings(
     current_user: User = Depends(get_current_user),
     page: Optional[int] = Query(0, minimum=0, description="Page number"),
@@ -67,7 +67,7 @@ async def read_own_ratings(
     return [ratings for ratings in data.get_user_ratings(current_user["id"])]
 
 
-@router.get("/user/me/{application}", response_model=RatingReturn)
+@router.get("/me/{application}", response_model=RatingReturn)
 async def read_own_application_rating(
     application: int = Path(..., description="Application ID"),
     current_user: User = Depends(get_current_user),
@@ -80,8 +80,8 @@ async def read_own_application_rating(
     return rating
 
 
-@router.post("/user/me/{application}", response_model=RatingReturn)
-async def add_application_rating(
+@router.post("/{application}", response_model=RatingReturn)
+async def add_update_application_rating(
     rating: Rating,
     application: int = Path(..., description="Application ID"),
     current_user: User = Depends(current_user_is_active),
@@ -106,7 +106,7 @@ async def add_application_rating(
     return return_rating
 
 
-@router.delete("/user/me/{rating}", response_model=Message)
+@router.delete("/{rating}", response_model=Message)
 async def delete_app_rating(
     rating: int = Path(..., description="Rating ID"),
     current_user: User = Depends(current_user_is_active),

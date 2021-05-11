@@ -93,7 +93,6 @@ class ApplicationReturn(ApplicationRef):
 
 
 class Documentation(BaseModel):
-    application: int
     documentation: str
 
 
@@ -102,7 +101,6 @@ class DocumentationReturn(BaseModel):
     documentation: str
     application: ApplicationRef
     updated: Optional[datetime] = None
-    owner: UserRef
 
 
 class Rating(BaseModel):
