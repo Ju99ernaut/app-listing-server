@@ -4,13 +4,16 @@ from datetime import datetime
 from constants import *
 
 from utils.db import connect_db
+import config
 
 
 @connect_db
 def add_user(db, username, email, password):
     table = db[USERS_TABLE]
     activate = True
-    if os.getenv("MAIL_USERNAME") and os.getenv("MAIL_PASSWORD"):
+    if (os.getenv("MAIL_USERNAME") and os.getenv("MAIL_PASSWORD")) or (
+        config.CONFIG.mail_username and config.CONFIG.mail_password
+    ):
         activate = False
     table.insert(
         {
