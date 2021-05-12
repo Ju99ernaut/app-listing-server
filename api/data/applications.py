@@ -6,13 +6,14 @@ from utils.db import connect_db
 
 
 @connect_db
-def add_application(db, image, title, by, groups, description, owner):
+def add_application(db, image, title, by, status, groups, description, owner):
     table = db[APPS_TABLE]
     table.insert(
         {
             IMAGE_KEY: image,
             TITLE_KEY: title,
             BY_KEY: by,
+            STATUS_KEY: status,
             GROUPS_KEY: groups,
             DESCRIPTION_KEY: description,
             UPDATED_KEY: datetime.utcnow(),

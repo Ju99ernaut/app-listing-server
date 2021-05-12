@@ -42,3 +42,8 @@ async def remove_application(app_id: int):
 @router.delete("/rating/{rating_id}")
 async def remove_rating(rating_id: int):
     data.admin_remove_rating(rating_id)
+
+
+@router.delete("/documentation/{doc_id}")
+async def remove_documentation(doc_id: int):
+    data.admin_remove_documentation(doc_id)

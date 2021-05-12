@@ -58,6 +58,7 @@ async def add_app(
             image,
             app.title,
             by,
+            app.status,
             groups,
             app.description,
             current_user["id"],
@@ -92,7 +93,7 @@ async def update_application(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail="Not allowed"
         )
     data.update_application(db_app["id"], app)
-    return data.get_application(app.title or title)
+    return data.get_application(app.title)
 
 
 @router.delete("/{application}", response_model=Message)

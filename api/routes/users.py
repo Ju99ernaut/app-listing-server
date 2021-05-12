@@ -2,11 +2,10 @@ import os
 import data.users as data
 from datetime import timedelta
 
-from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Path, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import RedirectResponse
-from models import Token, TokenData, User, UserInDB, UpdateUser, RegisterUser, Message
+from models import Token, User, UserInDB, UpdateUser, RegisterUser, Message
 from dependencies import get_current_user, current_user_is_active, get_email
 from utils.password import authenticate, create_access_token, get_hash
 from mail.send import user as send_email

@@ -45,3 +45,9 @@ def admin_remove_application(db, app_id):
 def admin_remove_rating(db, rating_id):
     table = db[RATINGS_TABLE]
     table.delete(id=rating_id)
+
+
+@connect_db
+def admin_remove_documentation(db, doc_id):
+    table = db[DOCS_TABLE]
+    table.delete(id=doc_id)

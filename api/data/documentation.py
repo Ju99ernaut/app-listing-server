@@ -6,11 +6,12 @@ from utils.db import connect_db
 
 
 @connect_db
-def add_documentation(db, application, documentation):
+def add_documentation(db, application, external, documentation):
     table = db[DOCS_TABLE]
     table.upsert(
         {
             APPLICATION_KEY: application,
+            EXTERNAL_KEY: external,
             DOCUMENTATION_KEY: documentation,
             UPDATED_KEY: datetime.utcnow(),
         },

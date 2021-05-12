@@ -3,7 +3,7 @@ import data.applications as app_data
 
 from fastapi import APIRouter, Depends, HTTPException, Path, status
 from models import User, Documentation, DocumentationReturn, Message
-from dependencies import get_current_user, current_user_is_active
+from dependencies import current_user_is_active
 
 from constants import OWNER_KEY
 
@@ -49,6 +49,7 @@ async def add_update_documentation(
         if app[OWNER_KEY]["id"] == current_user["id"]:
             data.add_documentation(
                 application,
+                doc.external,
                 doc.documentation,
             )
         else:
