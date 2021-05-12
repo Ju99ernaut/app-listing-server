@@ -2,7 +2,7 @@ import uvicorn
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import users, applications, ratings, admin, documentation
+from routes import users, applications, ratings, admin, documentation, meta
 
 from data import setup
 import config
@@ -30,6 +30,7 @@ app.include_router(ratings.router)
 app.include_router(applications.router)
 app.include_router(users.router)
 app.include_router(documentation.router)
+app.include_router(meta.router)
 
 
 @app.get("/")

@@ -12,12 +12,15 @@ USERS_TABLE = "users"
 IMAGE_KEY = "image"
 TITLE_KEY = "title"
 BY_KEY = "by"
+STATUS_KEY = "status"
 RATING_KEY = "rating"
 GROUPS_KEY = "groups"
 DESCRIPTION_KEY = "description"
 DOCUMENTATION_KEY = "documentation"
 UPDATED_KEY = "updated"
 OWNER_KEY = "owner"
+
+EXTERNAL_KEY = "external"
 
 USER_KEY = "user"
 APPLICATION_KEY = "application"
@@ -36,6 +39,7 @@ API_TAGS_METADATA = [
     {"name": "applications", "description": "Application listing"},
     {"name": "documentation", "description": "More detailed app info"},
     {"name": "ratings", "description": "Ratings and user feedback"},
+    {"name": "meta", "description": "API meta data"},
     # {"name": "admin", "description": "Admin only"},
 ]
 
