@@ -74,7 +74,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 
 @router.get("/confirm/{token}")
 async def confirm_email_token(
-    token: str = Path(..., description="Token to cofirm email")
+    token: str = Path(..., description="Token to confirm email")
 ):
     frontend = os.getenv("FRONTEND_URL") or config.CONFIG.frontend
     email = await get_email(token)
