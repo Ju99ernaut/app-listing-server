@@ -19,7 +19,7 @@ async def read_apps(
     page: Optional[int] = Query(0, minimum=0, description="Page number"),
     size: Optional[int] = Query(50, maximum=100, description="Page size"),
 ):
-    return data.get_all_applications()
+    return data.get_all_applications(size, page)
 
 
 @router.get("/me", response_model=List[ApplicationReturn])
@@ -28,7 +28,7 @@ async def read_own_apps(
     page: Optional[int] = Query(0, minimum=0, description="Page number"),
     size: Optional[int] = Query(50, maximum=100, description="Page size"),
 ):
-    return data.get_user_applications(current_user["id"])
+    return data.get_user_applications(current_user["id"], size, page)
 
 
 @router.get("/{application}", response_model=ApplicationReturn)

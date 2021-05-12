@@ -47,9 +47,9 @@ def get_user_application_ratings(db, user, application):
 
 
 @connect_db
-def get_user_ratings(db, user):
+def get_user_ratings(db, user, limit, start):
     table_ratings = db[RATINGS_TABLE]
-    rows = table_ratings.find(user=user)
+    rows = table_ratings.find(user=user, _limit=limit, _offset=limit * start)
     if rows is not None:
         table_apps = db[APPS_TABLE]
         table_users = db[USERS_TABLE]
@@ -67,9 +67,11 @@ def get_user_ratings(db, user):
 
 
 @connect_db
-def get_application_ratings(db, application):
+def get_application_ratings(db, application, limit, start):
     table_ratings = db[RATINGS_TABLE]
-    rows = table_ratings.find(application=application)
+    rows = table_ratings.find(
+        application=application, _limit=limit, _offset=limit * start
+    )
     if rows is not None:
         table_users = db[USERS_TABLE]
         table_apps = db[APPS_TABLE]
@@ -87,9 +89,9 @@ def get_application_ratings(db, application):
 
 
 @connect_db
-def get_all_ratings(db):
+def get_all_ratings(db, limit, start):
     table = db[RATINGS_TABLE]
-    all_items = table.all()
+    all_items = table.all(_limit=limit, _offset=limit * start)
     table_users = db[USERS_TABLE]
     table_apps = db[APPS_TABLE]
     return [
@@ -122,9 +124,9 @@ def get_average_rating(db, application):
 
 
 @connect_db
-def get_all_average_ratings(db):
+def get_all_average_ratings(db, limit, start):
     table = db[APPS_TABLE]
-    apps = table.all()
+    apps = table.all(_limit=limit, _offset=limit * start)
     all_items = []
     for app in apps:
         all_items.append(

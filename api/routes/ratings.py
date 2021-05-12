@@ -18,7 +18,7 @@ async def read_ratings(
     page: Optional[int] = Query(0, minimum=0, description="Page number"),
     size: Optional[int] = Query(50, maximum=100, description="Page size"),
 ):
-    return [ratings for ratings in data.get_all_ratings()]
+    return [ratings for ratings in data.get_all_ratings(size, page)]
 
 
 @router.get("/user/{user}", response_model=List[RatingReturn])
@@ -27,7 +27,7 @@ async def read_user_ratings(
     page: Optional[int] = Query(0, minimum=0, description="Page number"),
     size: Optional[int] = Query(50, maximum=100, description="Page size"),
 ):
-    return [ratings for ratings in data.get_user_ratings(user)]
+    return [ratings for ratings in data.get_user_ratings(user, size, page)]
 
 
 @router.get("/app/{application}", response_model=List[RatingReturn])
@@ -36,7 +36,9 @@ async def read_app_ratings(
     page: Optional[int] = Query(0, minimum=0, description="Page number"),
     size: Optional[int] = Query(50, maximum=100, description="Page size"),
 ):
-    return [ratings for ratings in data.get_application_ratings(application)]
+    return [
+        ratings for ratings in data.get_application_ratings(application, size, page)
+    ]
 
 
 @router.get("/average/{application}", response_model=RatingAverage)
@@ -55,7 +57,7 @@ async def read_all_app_averages(
     page: Optional[int] = Query(0, minimum=0, description="Page number"),
     size: Optional[int] = Query(50, maximum=100, description="Page size"),
 ):
-    return data.get_all_average_ratings()
+    return data.get_all_average_ratings(size, page)
 
 
 @router.get("/me", response_model=List[RatingReturn])
@@ -64,7 +66,9 @@ async def read_own_ratings(
     page: Optional[int] = Query(0, minimum=0, description="Page number"),
     size: Optional[int] = Query(50, maximum=100, description="Page size"),
 ):
-    return [ratings for ratings in data.get_user_ratings(current_user["id"])]
+    return [
+        ratings for ratings in data.get_user_ratings(current_user["id"], size, page)
+    ]
 
 
 @router.get("/me/{application}", response_model=RatingReturn)

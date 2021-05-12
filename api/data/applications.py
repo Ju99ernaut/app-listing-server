@@ -64,9 +64,9 @@ def get_application(db, title):
 
 
 @connect_db
-def get_user_applications(db, owner):
+def get_user_applications(db, owner, limit, start):
     table_apps = db[APPS_TABLE]
-    rows = table_apps.find(owner=owner)
+    rows = table_apps.find(owner=owner, _limit=limit, _offset=limit * start)
     if rows is not None:
         table_users = db[USERS_TABLE]
         user = table_users.find_one(id=owner)
@@ -76,9 +76,9 @@ def get_user_applications(db, owner):
 
 
 @connect_db
-def get_all_applications(db):
+def get_all_applications(db, limit, start):
     table_apps = db[APPS_TABLE]
-    all_items = table_apps.all()
+    all_items = table_apps.all(_limit=limit, _offset=limit * start)
     table_users = db[USERS_TABLE]
     return [
         {**apps, OWNER_KEY: table_users.find_one(id=apps[OWNER_KEY])}
