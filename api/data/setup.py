@@ -20,6 +20,8 @@ from utils.password import get_hash
     
     #################### documentations ######################
     application: application
+    status: str
+    external: str
     documentation: str
     updated: datetime
     
@@ -60,3 +62,14 @@ def admin(db):
             },
             [USERNAME_KEY, EMAIL_KEY],
         )
+
+
+@connect_db
+def migrate(db):
+    users_table = db[USERS_TABLE]
+    apps_table = db[APPS_TABLE]
+
+    users_table.create_column(USERNAME_KEY, db.types.text, unique=True, nullable=False)
+    users_table.create_column(EMAIL_KEY, db.types.text, unique=True, nullable=False)
+
+    apps_table.create_column(TITLE_KEY, db.types.text, unique=True, nullable=False)
