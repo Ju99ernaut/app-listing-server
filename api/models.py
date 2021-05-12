@@ -1,13 +1,13 @@
 from enum import Enum
 from typing import Optional, List, Union
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, AnyHttpUrl, validator
 from datetime import datetime
 
 
 class Token(BaseModel):
     access_token: str
     token_type: str
-    expires_in: Optional[int] = None
+    expires_in: Optional[int] = 3600
 
 
 class TokenData(BaseModel):
@@ -20,7 +20,7 @@ class RoleName(str, Enum):
 
 
 class UserRef(BaseModel):
-    id: Optional[int] = None
+    id: Optional[int] = 1
     username: str
     joined: Optional[datetime] = None
     active: bool
@@ -62,6 +62,7 @@ class Application(BaseModel):
     image: Optional[str] = None
     title: str
     by: Optional[str] = None
+    status: Optional[str] = ""
     groups: Union[List[str], str]
     description: str
 
@@ -73,10 +74,11 @@ class Application(BaseModel):
 
 
 class ApplicationRef(BaseModel):
-    id: Optional[int] = None
-    image: Optional[str] = None
+    id: Optional[int] = 1
+    image: Optional[str] = "default.png"
     title: str
     by: Optional[str] = None
+    status: Optional[str] = ""
     groups: Union[List[str], str]
     description: str
     updated: Optional[datetime] = None
@@ -93,11 +95,13 @@ class ApplicationReturn(ApplicationRef):
 
 
 class Documentation(BaseModel):
+    external: Optional[str] = ""
     documentation: str
 
 
 class DocumentationReturn(BaseModel):
     id: Optional[int] = None
+    external: Optional[AnyHttpUrl] = ""
     documentation: str
     application: ApplicationRef
     updated: Optional[datetime] = None
@@ -107,9 +111,17 @@ class Rating(BaseModel):
     rating: float
     comment: Optional[str] = None
 
+    @validator("rating")
+    def clamp(cls, v):
+        if v > 5:
+            return 5
+        elif v < 0:
+            return 0
+        return v
+
 
 class RatingReturn(BaseModel):
-    id: Optional[int] = None
+    id: Optional[int] = 1
     user: UserRef
     application: ApplicationRef
     rating: float
@@ -123,4 +135,8 @@ class RatingAverage(BaseModel):
 
 
 class Message(BaseModel):
-    msg: Optional[str] = ""
+    msg: Optional[str] = "success"
+
+
+class Count(BaseModel):
+    count: Optional[int] = 0
