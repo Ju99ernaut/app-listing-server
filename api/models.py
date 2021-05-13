@@ -100,7 +100,7 @@ class Documentation(BaseModel):
 
 
 class DocumentationReturn(BaseModel):
-    id: Optional[int] = None
+    id: Optional[int] = 1
     external: Optional[AnyHttpUrl] = ""
     documentation: str
     application: ApplicationRef
