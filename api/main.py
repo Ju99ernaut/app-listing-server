@@ -1,3 +1,4 @@
+import os
 import uvicorn
 
 from fastapi import FastAPI
@@ -19,7 +20,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[os.getenv("FRONTEND_URL") or config.CONFIG.frontend],  # ,["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
