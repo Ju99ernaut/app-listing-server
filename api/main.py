@@ -18,9 +18,12 @@ app = FastAPI(
     openapi_tags=API_TAGS_METADATA,
 )
 
+origins = [os.getenv("FRONTEND_URL")]
+if not origins[0]:
+    origins = [config.CONFIG.frontend, "http://localhost:3000"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.getenv("FRONTEND_URL") or config.CONFIG.frontend],  # ,["*"],
+    allow_origins=origins,  # ,["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
