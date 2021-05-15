@@ -3,8 +3,8 @@ black
 requests
 dataset
 fastapi
+fastapi-mail 
 python-multipart
-psycopg2
 pytest
 uvicorn[standard]
 python-jose[cryptography]
