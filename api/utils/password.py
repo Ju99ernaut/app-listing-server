@@ -1,10 +1,10 @@
-import data
+import data.users as data
 from typing import Optional
 
 from datetime import datetime, timedelta
 from jose import jwt
 from passlib.context import CryptContext
-from constants import *
+from constants import PASSWORD_KEY, SECRET_KEY, ALGORITHM
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

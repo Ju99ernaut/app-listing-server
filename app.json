@@ -27,6 +27,26 @@
             "description": "Admin email, allows access to admin only endpoints",
             "value": "admin@admin.admin"
         },
+        "MAIL_USERNAME": {
+            "description": "email address for your sending confirmation email. If blank user emails wont be verified.",
+            "value": "admin@admin.admin",
+            "required": false
+        },
+        "MAIL_PASSWORD": {
+            "description": "Above email address password. If blank user emails wont be verified.",
+            "value": "d4h5bg5!J#$tmg&**IMyrWRc!#CFcg",
+            "required": false
+        },
+        "BACKEND_URL": {
+            "description": "Backend root used for email redirects.",
+            "value": "https://app-name.herokuapp.com",
+            "required": false
+        },
+        "FRONTEND_URL": {
+            "description": "Fronend root used for email redirects",
+            "value": "https://front.end",
+            "required": false
+        },
         "SECRET_KEY": {
             "description": "Application secret key",
             "generator": "secret"

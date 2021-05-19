@@ -1,42 +1,58 @@
-import data
+import os
+import data.users as data
 from datetime import timedelta
 
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from fastapi.security import OAuth2PasswordRequestForm
-from models import (
-    Token,
-    TokenData,
-    User,
-    UserInDB,
-    Application,
-    Rating,
-    UpdateUser,
-    UpdateApplication,
-)
-from dependencies import get_current_user
+from fastapi.responses import RedirectResponse
+from models import Token, User, UserInDB, UpdateUser, RegisterUser, Message
+from dependencies import get_current_user, current_user_is_active, get_email
 from utils.password import authenticate, create_access_token, get_hash
+from mail.send import user as send_email
 
-from constants import *
+from constants import (
+    USERNAME_KEY,
+    EMAIL_KEY,
+    PASSWORD_KEY,
+    ACTIVE_KEY,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+)
+import config
 
 router = APIRouter(tags=["users"], responses={404: {"description": "Not found"}})
 
 
 @router.post("/register", response_model=User)
-async def register_user(user: UserInDB):
+async def register_user(user: RegisterUser):
     if data.get_user(user.username):
         raise HTTPException(
-            status_code=409, detail="User with same username already exists"
+            status_code=status.HTTP_409_CONFLICT,
+            detail="User with same username already exists",
         )
-    if user.username and user.password:
-        data.add_user(user.username, user.email, get_hash(user.password))
-    else:
-        raise HTTPException(status_code=400, detail="Missing required fields")
+    if data.get_user_by_email(user.email):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This email already has an account",
+        )
+    data.add_user(user.username, user.email, get_hash(user.password))
     return_user = data.get_user(user.username)
     if not return_user:
         raise HTTPException(
-            status_code=404, detail="Item not found, failed to register"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Item not found, failed to register",
         )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    confirm_token = create_access_token(
+        data={"sub": user[EMAIL_KEY]}, expires_delta=access_token_expires
+    )
+    backend = os.getenv("BACKEND_URL") or config.CONFIG.backend
+    await send_email(
+        user[EMAIL_KEY],
+        {
+            "username": user[USERNAME_KEY],
+            "confirm_url": f"{backend}/confirm/{confirm_token}",
+        },
+    )
     return return_user
 
 
@@ -56,13 +72,47 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     return {"access_token": access_token, "token_type": "bearer", "expires_in": 3600}
 
 
+@router.get("/confirm/{token}")
+async def confirm_email_token(
+    token: str = Path(..., description="Token to confirm email")
+):
+    frontend = os.getenv("FRONTEND_URL") or config.CONFIG.frontend
+    email = await get_email(token)
+    if email == "expired":
+        return RedirectResponse(url=f"{frontend}/?status=expired")
+    user = data.get_user_by_email(email)
+    if user:
+        data.activate_user(user["id"], {ACTIVE_KEY: True})
+        return RedirectResponse(url=f"{frontend}/?status=confirmed")
+    else:
+        return RedirectResponse(url=f"{frontend}/?status=unconfirmed")
+
+
+@router.post("/resend", response_model=Message)
+async def regenerate_confirm_email(user: User = Depends(current_user_is_active)):
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    confirm_token = create_access_token(
+        data={"sub": user[EMAIL_KEY]}, expires_delta=access_token_expires
+    )
+    backend = os.getenv("BACKEND_URL") or config.CONFIG.backend
+    await send_email(
+        user[EMAIL_KEY],
+        {
+            "username": user[USERNAME_KEY],
+            "confirm_url": f"{backend}/confirm/{confirm_token}",
+        },
+    )
+    return {"msg": "resent"}
+
+
 @router.put("/users/me", response_model=User)
 async def update_user_me(
-    user: UpdateUser, current_user: User = Depends(get_current_user)
+    user: UpdateUser, current_user: User = Depends(current_user_is_active)
 ):
     if data.get_user(user.username):
         raise HTTPException(
-            status_code=409, detail="User with same username already exists"
+            status_code=status.HTTP_409_CONFLICT,
+            detail="User with same username already exists",
         )
     db_user = data.get_user(current_user[USERNAME_KEY])
     data.update_user(db_user["id"], user)
@@ -74,100 +124,13 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
-@router.delete("/users/me")
-async def unregister_users_me(current_user: User = Depends(get_current_user)):
+@router.delete("/users/me", response_model=Message)
+async def unregister_users_me(current_user: UserInDB = Depends(get_current_user)):
     data.remove_user(
         current_user[USERNAME_KEY], current_user[EMAIL_KEY], current_user[PASSWORD_KEY]
     )
-
-
-@router.get("/users/me/apps", response_model=List[Application])
-async def read_own_apps(current_user: User = Depends(get_current_user)):
-    return [apps for apps in data.get_user_applications(current_user[USERNAME_KEY])]
-
-
-@router.post("/users/me/apps", response_model=Application)
-async def add_app(app: Application, current_user: User = Depends(get_current_user)):
-    if data.get_application(app.title):
+    if data.get_user(current_user[USERNAME_KEY]):
         raise HTTPException(
-            status_code=409, detail="Application with same title already exists"
+            status_code=status.HTTP_417_EXPECTATION_FAILED, detail="Failed to delete"
         )
-    if app.title and app.description:
-        image = app.image or "default.png"
-        by = app.by or current_user[USERNAME_KEY]
-        groups = app.groups or "other"
-        data.add_application(
-            image,
-            app.title,
-            by,
-            groups,
-            app.description,
-            current_user[USERNAME_KEY],
-        )
-    else:
-        raise HTTPException(status_code=400, detail="Missing required fields")
-    return_app = data.get_application(app.title)
-    if not return_app:
-        raise HTTPException(status_code=404, detail="Item not found, failed to add")
-    return return_app
-
-
-@router.put("/users/me/apps/{title}", response_model=Application)
-async def update_application(
-    title: str, app: UpdateApplication, current_user: User = Depends(get_current_user)
-):
-    if data.get_application(app.title):
-        raise HTTPException(
-            status_code=409, detail="Application with same title already exists"
-        )
-    db_app = data.get_application(title)
-    if db_app[OWNER_KEY] != current_user[USERNAME_KEY]:
-        raise HTTPException(status_code=405, detail="Not allowed")
-    data.update_application(db_app["id"], app)
-    return data.get_application(app.title or title)
-
-
-@router.delete("/users/me/apps/{title}")
-async def delete_app(title: str, current_user: User = Depends(get_current_user)):
-    data.remove_application(title, current_user[USERNAME_KEY])
-
-
-@router.get("/users/me/ratings", response_model=List[Rating])
-async def read_own_ratings(current_user: User = Depends(get_current_user)):
-    return [ratings for ratings in data.get_user_ratings(current_user[USERNAME_KEY])]
-
-
-@router.get("/users/me/ratings/{application}", response_model=Rating)
-async def read_own_application_rating(
-    application: str, current_user: User = Depends(get_current_user)
-):
-    rating = data.get_user_application_ratings(current_user[USERNAME_KEY], application)
-    if not rating:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return rating
-
-
-@router.post("/users/me/ratings/{application}", response_model=Rating)
-async def add_application_rating(
-    application: str, rating: Rating, current_user: User = Depends(get_current_user)
-):
-    if rating.rating:
-        data.add_rating(
-            current_user[USERNAME_KEY],
-            application,
-            rating.rating,
-            rating.comment,
-        )
-    else:
-        raise HTTPException(status_code=400, detail="Missing required fields")
-    return_rating = data.get_user_application_ratings(
-        current_user[USERNAME_KEY], application
-    )
-    if not return_rating:
-        raise HTTPException(status_code=404, detail="Item not found, failed to add")
-    return return_rating
-
-
-@router.delete("/users/me/ratings/{id}")
-async def delete_app_rating(id: int, current_user: User = Depends(get_current_user)):
-    data.remove_rating(id, current_user[USERNAME_KEY])
+    return {"msg": "deleted"}

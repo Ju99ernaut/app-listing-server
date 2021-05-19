@@ -2,6 +2,7 @@ ConfigArgParse
 requests
 dataset
 fastapi
+fastapi-mail 
 python-multipart
 psycopg2
 uvicorn[standard]

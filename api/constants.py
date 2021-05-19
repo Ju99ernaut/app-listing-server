@@ -5,17 +5,22 @@ import os
  Constants useful for data module
 """
 APPS_TABLE = "applications"
+DOCS_TABLE = "documentations"
 RATINGS_TABLE = "ratings"
 USERS_TABLE = "users"
 
 IMAGE_KEY = "image"
 TITLE_KEY = "title"
 BY_KEY = "by"
+STATUS_KEY = "status"
 RATING_KEY = "rating"
 GROUPS_KEY = "groups"
 DESCRIPTION_KEY = "description"
+DOCUMENTATION_KEY = "documentation"
 UPDATED_KEY = "updated"
 OWNER_KEY = "owner"
+
+EXTERNAL_KEY = "external"
 
 USER_KEY = "user"
 APPLICATION_KEY = "application"
@@ -26,13 +31,16 @@ EMAIL_KEY = "email"
 PASSWORD_KEY = "password"
 DISABLED_KEY = "disabled"
 JOINED_KEY = "joined"
-ADMIN_KEY = "admin"
+ACTIVE_KEY = "active"
+ROLE_KEY = "role"
 
 API_TAGS_METADATA = [
-    {"name": "applications", "description": "Application listing"},
-    {"name": "ratings", "description": "Ratings and user feedback"},
     {"name": "users", "description": "User data"},
-    {"name": "admin", "description": "Admin only"},
+    {"name": "applications", "description": "Application listing"},
+    {"name": "documentation", "description": "More detailed app info"},
+    {"name": "ratings", "description": "Ratings and user feedback"},
+    {"name": "meta", "description": "API meta data"},
+    # {"name": "admin", "description": "Admin only"},
 ]
 
 """
