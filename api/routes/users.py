@@ -88,7 +88,7 @@ async def confirm_email_token(
         return RedirectResponse(url=f"{frontend}/?status=unconfirmed")
 
 
-@router.post("/resend", response_model=Message)
+@router.get("/resend", response_model=Message)
 async def regenerate_confirm_email(user: User = Depends(current_user_is_active)):
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     confirm_token = create_access_token(
