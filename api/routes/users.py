@@ -83,9 +83,9 @@ async def confirm_email_token(
     user = data.get_user_by_email(email)
     if user:
         data.activate_user(user["id"], {ACTIVE_KEY: True})
-        return RedirectResponse(url=f"{frontend}/?status=confirmed")
+        return RedirectResponse(url=f"{frontend}#status=confirmed")
     else:
-        return RedirectResponse(url=f"{frontend}/?status=unconfirmed")
+        return RedirectResponse(url=f"{frontend}#status=unconfirmed")
 
 
 @router.get("/resend", response_model=Message)
