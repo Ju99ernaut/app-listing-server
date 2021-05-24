@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | App Listings</title>
+    <meta name="description" content="Dashboard for app-listings API">
+    <link rel="stylesheet" href="{{url_for('static', path='/css/style.css')}}">
+</head>
+
+<body>
+    <div class="app">
+        <p class="notifications">Login to view allowed actions</p>
+        <div class="login-form">
+            <form id="login">
+                <input type="text" name="username" placeholder="username">
+                <input type="password" name="password" placeholder="password">
+                <button type="submit" class="btn btn-login">Login</button>
+            </form>
+        </div>
+        <div class="role-form" style="display:none;">
+            <form id="username">
+                <input type="text" name="username" placeholder="username">
+                <input type="text" name="role" placeholder="role e.g. developer">
+                <button type="submit" class="btn btn-login">Set Role</button>
+            </form>
+            <form id="email">
+                <input type="email" name="email" placeholder="email e.g. user@example.com">
+                <input type="text" name="role" placeholder="role e.g. developer">
+                <button type="submit" class="btn btn-login">Set Role</button>
+            </form>
+        </div>
+    </div>
+    <script src="{{url_for('static', path='/dashboard.js')}}"></script>
+</body>
+
+</html>

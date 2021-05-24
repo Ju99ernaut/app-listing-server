@@ -3,7 +3,8 @@ import uvicorn
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import users, applications, ratings, admin, documentation, meta
+from fastapi.staticfiles import StaticFiles
+from routes import users, applications, ratings, admin, documentation, meta, dashboard
 
 from data import setup
 import config
@@ -29,12 +30,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount("/static", StaticFiles(directory="api/static"), name="static")
+
 app.include_router(admin.router)
 app.include_router(ratings.router)
 app.include_router(applications.router)
 app.include_router(users.router)
 app.include_router(documentation.router)
 app.include_router(meta.router)
+app.include_router(dashboard.router)
 
 
 @app.get("/")
