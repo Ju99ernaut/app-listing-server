@@ -32,7 +32,7 @@ async def get_user(user_id: int):
 @router.get("/username/roles", response_model=Message)
 async def set_user_role_username(username: str, role: str):
     data.admin_set_username_role(username, role)
-    return {"msg": success}
+    return {"msg": "success"}
 
 
 @router.get("/email/roles", response_model=Message)
