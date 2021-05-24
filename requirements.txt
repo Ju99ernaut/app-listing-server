@@ -1,6 +1,7 @@
 ConfigArgParse
 requests
 dataset
+aiofiles
 fastapi
 fastapi-mail 
 python-multipart
