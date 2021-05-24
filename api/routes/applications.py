@@ -3,7 +3,7 @@ import data.applications as data
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Path, status
 from models import User, Application, ApplicationReturn, Message
-from dependencies import get_current_user, current_user_is_active
+from dependencies import get_current_user, current_user_is_active, current_user_can_list
 
 from constants import USERNAME_KEY, OWNER_KEY
 
@@ -43,7 +43,7 @@ async def read_app(application: int = Path(..., description="Application ID")):
 
 @router.post("", response_model=ApplicationReturn)
 async def add_app(
-    app: Application, current_user: User = Depends(current_user_is_active)
+    app: Application, current_user: User = Depends(current_user_can_list)
 ):
     if data.get_application(app.title):
         raise HTTPException(

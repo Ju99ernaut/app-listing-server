@@ -16,6 +16,7 @@ class TokenData(BaseModel):
 
 class RoleName(str, Enum):
     user = "user"
+    developer = "developer"
     admin = "admin"
 
 

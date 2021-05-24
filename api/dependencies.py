@@ -50,6 +50,18 @@ async def current_user_is_active(current_user: User = Depends(get_current_user))
     return current_user
 
 
+async def current_user_can_list(current_user: User = Depends(get_current_user)):
+    if not current_user[ACTIVE_KEY]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Not verified"
+        )
+    if current_user[ROLE_KEY] != "developer" or current_user[ROLE_KEY] != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Not developer"
+        )
+    return current_user
+
+
 async def current_user_is_admin(current_user: User = Depends(get_current_user)):
     if current_user[ROLE_KEY] != "admin":
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Not admin")

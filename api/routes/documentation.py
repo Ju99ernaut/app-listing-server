@@ -3,7 +3,7 @@ import data.applications as app_data
 
 from fastapi import APIRouter, Depends, HTTPException, Path, status
 from models import User, Documentation, DocumentationReturn, Message
-from dependencies import current_user_is_active
+from dependencies import current_user_is_active, current_user_can_list
 
 from constants import OWNER_KEY
 
@@ -41,7 +41,7 @@ async def read_documentation_by_app_id(
 @router.post("/{application}", response_model=DocumentationReturn)
 async def add_update_documentation(
     doc: Documentation,
-    current_user: User = Depends(current_user_is_active),
+    current_user: User = Depends(current_user_can_list),
     application: int = Path(..., description="Application ID"),
 ):
     if doc.documentation:
