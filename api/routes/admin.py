@@ -2,7 +2,7 @@ import data.admin as data
 
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
-from models import User
+from models import User, Message
 from dependencies import current_user_is_admin
 
 router = APIRouter(
@@ -27,6 +27,18 @@ async def get_user(user_id: int):
             status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
         )
     return user
+
+
+@router.get("/username/roles", response_model=Message)
+async def set_user_role_username(username: str, role: str):
+    data.admin_set_username_role(username, role)
+    return {"msg": success}
+
+
+@router.get("/email/roles", response_model=Message)
+async def set_user_role_email(email: str, role: str):
+    data.admin_set_email_role(email, role)
+    return {"msg": success}
 
 
 @router.delete("/user/{user_id}")
