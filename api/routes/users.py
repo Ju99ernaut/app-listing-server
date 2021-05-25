@@ -89,7 +89,7 @@ async def confirm_email_token(
 
 
 @router.get("/resend", response_model=Message)
-async def regenerate_confirm_email(user: User = Depends(current_user_is_active)):
+async def regenerate_confirm_email(user: User = Depends(get_current_user)):
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     confirm_token = create_access_token(
         data={"sub": user[EMAIL_KEY]}, expires_delta=access_token_expires
