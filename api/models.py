@@ -63,7 +63,7 @@ class Application(BaseModel):
     image: Optional[str] = None
     title: str
     by: Optional[str] = None
-    status: Optional[str] = ""
+    status: Optional[str] = None
     groups: Union[List[str], str]
     description: str
 
@@ -72,6 +72,12 @@ class Application(BaseModel):
         if type(v) == list:
             return ",".join(v)
         return v
+
+
+class ApplicationUpdate(Application):
+    title: Optional[str] = None
+    groups: Optional[Union[List[str], str]] = None
+    description: Optional[str] = None
 
 
 class ApplicationRef(BaseModel):

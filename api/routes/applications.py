@@ -2,7 +2,7 @@ import data.applications as data
 
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Path, status
-from models import User, Application, ApplicationReturn, Message
+from models import User, Application, ApplicationUpdate, ApplicationReturn, Message
 from dependencies import get_current_user, current_user_is_active, current_user_can_list
 
 from constants import USERNAME_KEY, OWNER_KEY
@@ -78,7 +78,7 @@ async def add_app(
 
 @router.put("/{application}", response_model=ApplicationReturn)
 async def update_application(
-    app: Application,
+    app: ApplicationUpdate,
     application: int = Path(..., description="Application ID"),
     current_user: User = Depends(current_user_is_active),
 ):
@@ -93,7 +93,7 @@ async def update_application(
             status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail="Not allowed"
         )
     data.update_application(db_app["id"], app)
-    return data.get_application(app.title)
+    return data.get_application_by_id(db_app["id"])
 
 
 @router.delete("/{application}", response_model=Message)
