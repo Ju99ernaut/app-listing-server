@@ -45,7 +45,7 @@ async def read_app_ratings(
 async def read_app_average(application: int = Path(..., description="Application ID")):
     rating = data.get_average_rating(application)
     application_dict = apps_data.get_application_by_id(application)
-    if not rating:
+    if not application_dict:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
         )
