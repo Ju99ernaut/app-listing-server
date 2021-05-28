@@ -55,7 +55,7 @@ async def current_user_can_list(current_user: User = Depends(get_current_user)):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Not verified"
         )
-    if current_user[ROLE_KEY] != "developer" or current_user[ROLE_KEY] != "admin":
+    if current_user[ROLE_KEY] != "developer" and current_user[ROLE_KEY] != "admin":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Not developer"
         )
