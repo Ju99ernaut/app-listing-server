@@ -49,4 +49,9 @@ async def docs_info():
 if __name__ == "__main__":
     setup.admin()
     setup.migrate()
-    uvicorn.run("main:app", host=config.CONFIG.host, port=int(config.CONFIG.port))
+    uvicorn.run(
+        "main:app",
+        host=config.CONFIG.host,
+        port=int(config.CONFIG.port),
+        reload=bool(config.CONFIG.reload),
+    )
