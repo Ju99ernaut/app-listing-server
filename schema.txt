@@ -6,31 +6,39 @@ Table users as U {
   id int [pk, increment] // auto-increment
   username varchar [not null, unique]
   email varchar [not null, unique]
-  password varchar
-  joined datetime
-  admin bool
+  password varchar [not null]
+  joined datetime [not null]
+  active bool [not null]
+  role varchar [not null]
 }
 
-Table applications {
+Table applications as A {
   id int [pk, increment] // auto-increment
-  image varchar
+  image varchar [not null]
   title varchar [not null, unique]
-  by varchar
+  by varchar [not null]
   groups [varchar]
-  description varchar
-  updated datetime
-  owner varchar [ref: - U.username]
+  owner varchar [ref: > U.id]
+  description varchar [not null]
+  status varchar
+  updated datetime [not null]
 }
 
-Table ratings {
+Table ratings as R {
   id int [pk, increment] // auto-increment
-  user varchar [ref: - U.username]
-  application varchar [ref: - applications.title]
-  rating float
-  comment varchar
-  updated datetime
+  user varchar [ref: - U.id]
+  application varchar [ref: - A.id]
+  rating float [not null]
+}
+
+Table documantations as D {
+  id int [pk, increment]
+  application varchar [ref: - A.id]
+  external varchar
+  documantation varchar [not null]
+  updated varchar [not null]
 }
 
 // Creating references
 // You can also define relaionship separately
-// > many-to-one; < one-to-many; - one-to-one
+// > many-to-one; < one-to-many; - one-to-oe) > merchants.(id, country_code)
