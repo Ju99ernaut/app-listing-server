@@ -43,7 +43,7 @@
             "required": false
         },
         "FRONTEND_URL": {
-            "description": "Fronend root used for email redirects",
+            "description": "Frontend root used for email redirects",
             "value": "https://front.end",
             "required": false
         },

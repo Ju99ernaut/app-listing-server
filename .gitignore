@@ -1,6 +1,7 @@
 # Project specific ignores
 config.txt
 venv2/
+trash/
 data.db*
 
 # Vim Autosave Ignores
