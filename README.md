@@ -19,6 +19,9 @@ Create [dependency](https://fastapi.tiangolo.com/tutorial/dependencies/) for map
 
 ![Change Password](https://user-images.githubusercontent.com/48953676/121140394-158aac00-c83a-11eb-8c53-cbadff4ff5af.png)
 
+### Admin dashboard
+Implement more robust dashboard. A basic dashboard for assigning user roles is already available. Associated files are [`dashboard.html`](api/templates/dashboard.html), [`style.css`](api/static/css/style.css), [`dashboard.js`](api/static/dashboard.js) and [`dashboard.py`](api/routes/dashboard.py).
+
 ### Websockets
 May be better to implement websockets for some data such as ratings/reviews https://fastapi.tiangolo.com/advanced/websockets/
 
