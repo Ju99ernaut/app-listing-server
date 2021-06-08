@@ -10,6 +10,18 @@ A REST API for an app store like application project using `fastapi` and `datase
 - [ ] Admin dashboard
 - [ ] Websockets
 
+### External auth
+Create [dependency](https://fastapi.tiangolo.com/tutorial/dependencies/) for mapping userdata from an external auth provider.([`dependencies.py`](api/dependencies.py)) 
+
+![Rally OAuth Server](https://user-images.githubusercontent.com/48953676/121140332-03107280-c83a-11eb-8c5b-06fdc9de741f.png)
+
+### Change password
+
+![Change Password](https://user-images.githubusercontent.com/48953676/121140394-158aac00-c83a-11eb-8c53-cbadff4ff5af.png)
+
+### Websockets
+May be better to implement websockets for some data such as ratings/reviews https://fastapi.tiangolo.com/advanced/websockets/
+
 ## Development
 
 Clone the repo
